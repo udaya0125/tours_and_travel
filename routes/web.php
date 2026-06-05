@@ -28,4 +28,12 @@ Route::get('/',function(){
     return Inertia::render('AdminPages/Welcome');
 });
 
+Route::get('/user-management',function(){
+    return Inertia::render('AdminPages/UserManagement');
+});
+
+Route::get('/activity-logs',function(){
+    return Inertia::render('AdminPages/ActivityLogs');
+});
+
 require __DIR__.'/auth.php';
