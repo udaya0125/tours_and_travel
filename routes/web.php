@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\CountryController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -18,22 +19,57 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
-Route::get('/',function(){
-    return Inertia::render('AdminPages/Welcome');
-});
+    // ###############################################################################################################
+    //  Authenticated Routes (Only accessible to logged-in users)
+    // ################################################################################################################
 
-Route::get('/user-management',function(){
-    return Inertia::render('AdminPages/UserManagement');
-});
+    Route::middleware('auth')->group(function () {
 
-Route::get('/activity-logs',function(){
-    return Inertia::render('AdminPages/ActivityLogs');
-});
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Page Routes for Welcome Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+    Route::get('/',function(){
+        return Inertia::render('AdminPages/Welcome');
+    });
+
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Page Routes for User Management Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+    Route::get('/user-management',function(){
+        return Inertia::render('AdminPages/UserManagement');
+    });
+
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Page Routes for Activity Logs Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    
+    
+    Route::get('/activity-logs',function(){
+        return Inertia::render('AdminPages/ActivityLogs');
+    });
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Page Routes for Country Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+    Route::get('/countries',function(){
+        return Inertia::render('NavPages/Country');
+    });
+
+    // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    // Controller Routes for Country Page
+    // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+    Route::get('/ourcountries', [CountryController::class, 'index'])->name('ourcountries.index');
+    Route::post('/ourcountries', [CountryController::class, 'store'])->name('ourcountries.store');
+    Route::put('/ourcountries/{id}', [CountryController::class, 'update'])->name('ourcountries.update');
+    Route::delete('/ourcountries/{id}', [CountryController::class, 'destroy'])->name('ourcountries.destroy');
+
+});    
 
 require __DIR__.'/auth.php';

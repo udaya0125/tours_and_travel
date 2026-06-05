@@ -272,6 +272,7 @@ import { IoHelpCircleOutline } from "react-icons/io5";
 
 const NAV_ITEMS = [
     { href: "/", label: "Dashboard", icon: RxDashboard },
+    { href: "/countries", label: "Countries", icon: LuFolderOpen },
     { href: "/category", label: "Category", icon: LuFolderOpen },
     { href: "/sub-category", label: "Sub Category", icon: LuFolderTree },
     { href: "/tours", label: "Tours", icon: LuMap },
