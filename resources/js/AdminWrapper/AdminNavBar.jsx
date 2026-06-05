@@ -273,7 +273,6 @@ const AdminNavBar = ({ onMenuToggle }) => {
 
                                 <div className="hidden sm:block text-left">
                                     <p className="text-sm font-semibold text-gray-800 leading-none">{user?.name || "Guest"}</p>
-                                    <p className="text-[10px] text-gray-400 mt-0.5 leading-none">Administrator</p>
                                 </div>
 
                                 <ChevronDown
@@ -309,13 +308,13 @@ const AdminNavBar = ({ onMenuToggle }) => {
                                             </div>
                                             <div className="overflow-hidden">
                                                 <p className="text-sm font-semibold text-gray-900 truncate">{user?.name || "Guest"}</p>
-                                                <p className="text-[11px] text-gray-400 truncate">{user?.email || ""}</p>
+                                                <p className="text-[11px] text-gray-400 truncate">{user?.email || "admin@domain.com"}</p>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Menu items */}
-                                    <div className="p-1.5 space-y-0.5">
+                                    {/* <div className="p-1.5 space-y-0.5">
                                         <Link
                                             href="/profile"
                                             className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-700 hover:bg-gray-100/80 hover:text-gray-900 hover:border-gray-200 border border-transparent transition-all duration-150 group"
@@ -334,7 +333,7 @@ const AdminNavBar = ({ onMenuToggle }) => {
                                             </div>
                                             <span className="font-medium">Settings</span>
                                         </Link>
-                                    </div>
+                                    </div> */}
 
                                     <div className="mx-3 border-t border-gray-100" />
 
