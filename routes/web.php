@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\CategoryController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -69,6 +70,15 @@ Route::get('/dashboard', function () {
     Route::post('/ourcountries', [CountryController::class, 'store'])->name('ourcountries.store');
     Route::put('/ourcountries/{id}', [CountryController::class, 'update'])->name('ourcountries.update');
     Route::delete('/ourcountries/{id}', [CountryController::class, 'destroy'])->name('ourcountries.destroy');
+
+    Route::get('/categories',function(){
+        return Inertia::render('NavPages/Category');
+    });   
+
+    Route::get('/ourcategories', [CategoryController::class, 'index'])->name('ourcategories.index');
+    Route::post('/ourcategories', [CategoryController::class, 'store'])->name('ourcategories.store');
+    Route::put('/ourcategories/{id}', [CategoryController::class, 'update'])->name('ourcategories.update');
+    Route::delete('/ourcategories/{id}', [CategoryController::class, 'destroy'])->name('ourcategories.destroy');
 
 });    
 
