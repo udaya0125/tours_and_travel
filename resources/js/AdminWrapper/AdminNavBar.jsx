@@ -240,7 +240,7 @@ const AdminNavBar = ({ onMenuToggle }) => {
                         {/* Notification bell */}
                         <button className="relative flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 border border-gray-200 shadow-sm hover:shadow-md hover:scale-110 hover:border-blue-300 transition-all duration-200">
                             <Bell style={{ width: "15px", height: "15px" }} className="text-gray-500" />
-                            <span className="absolute top-1 right-1 w-2 h-2 rounded-full border-2 border-white" />
+                            {/* <span className="absolute top-1 right-1 w-2 h-2 rounded-full border-2 border-white" /> */}
                         </button>
 
                         {/* Divider */}

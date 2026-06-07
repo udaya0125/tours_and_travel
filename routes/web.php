@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SubCategoryController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -79,6 +80,16 @@ Route::get('/dashboard', function () {
     Route::post('/ourcategories', [CategoryController::class, 'store'])->name('ourcategories.store');
     Route::put('/ourcategories/{id}', [CategoryController::class, 'update'])->name('ourcategories.update');
     Route::delete('/ourcategories/{id}', [CategoryController::class, 'destroy'])->name('ourcategories.destroy');
+
+
+    Route::get('/subcategories',function(){
+        return Inertia::render('NavPages/SubCategory');
+    }); 
+
+    Route::get('/oursubcategories', [SubCategoryController::class, 'index'])->name('oursubcategories.index');
+    Route::post('/oursubcategories', [SubCategoryController::class, 'store'])->name('oursubcategories.store');
+    Route::put('/oursubcategories/{id}', [SubCategoryController::class, 'update'])->name('oursubcategories.update');
+    Route::delete('/oursubcategories/{id}', [SubCategoryController::class, 'destroy'])->name('oursubcategories.destroy');
 
 });    
 

@@ -274,7 +274,7 @@ const NAV_ITEMS = [
     { href: "/", label: "Dashboard", icon: RxDashboard },
     { href: "/countries", label: "Countries", icon: LuFolderOpen },
     { href: "/categories", label: "Category", icon: LuFolderOpen },
-    { href: "/sub-category", label: "Sub Category", icon: LuFolderTree },
+    { href: "/subcategories", label: "Sub Category", icon: LuFolderTree },
     { href: "/tours", label: "Tours", icon: LuMap },
     { href: "/trekking", label: "Trekking", icon: LuMountain },
     { href: "/activities", label: "Activities", icon: LuFootprints },
