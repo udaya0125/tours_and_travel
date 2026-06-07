@@ -54,4 +54,9 @@ class Package extends Model
     {
         return $this->belongsTo(SubCategory::class);
     }
+
+    public function faqs()
+    {
+        return $this->hasMany(Faq::class);
+    }
 }

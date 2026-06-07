@@ -8,6 +8,7 @@ use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\FaqController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -100,6 +101,15 @@ Route::get('/dashboard', function () {
     Route::post('/ourpackages', [PackageController::class, 'store'])->name('ourpackages.store');
     Route::put('/ourpackages/{id}', [PackageController::class, 'update'])->name('ourpackages.update');
     Route::delete('/ourpackages/{id}', [PackageController::class, 'destroy'])->name('ourpackages.destroy');
+
+    Route::get('/faqs',function(){
+        return Inertia::render('NavPages/FAQ');
+    }); 
+
+    Route::get('/ourfaqs', [FAQController::class, 'index'])->name('ourfaqs.index');
+    Route::post('/ourfaqs', [FAQController::class, 'store'])->name('ourfaqs.store');
+    Route::put('/ourfaqs/{id}', [FAQController::class, 'update'])->name('ourfaqs.update');
+    Route::delete('/ourfaqs/{id}', [FAQController::class, 'destroy'])->name('ourfaqs.destroy');
 
 });    
 
