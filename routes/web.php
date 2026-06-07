@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubCategoryController;
+use App\Http\Controllers\PackageController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -90,6 +91,15 @@ Route::get('/dashboard', function () {
     Route::post('/oursubcategories', [SubCategoryController::class, 'store'])->name('oursubcategories.store');
     Route::put('/oursubcategories/{id}', [SubCategoryController::class, 'update'])->name('oursubcategories.update');
     Route::delete('/oursubcategories/{id}', [SubCategoryController::class, 'destroy'])->name('oursubcategories.destroy');
+
+    Route::get('/package',function(){
+        return Inertia::render('NavPages/Package');
+    }); 
+
+    Route::get('/ourpackages', [PackageController::class, 'index'])->name('ourpackages.index');
+    Route::post('/ourpackages', [PackageController::class, 'store'])->name('ourpackages.store');
+    Route::put('/ourpackages/{id}', [PackageController::class, 'update'])->name('ourpackages.update');
+    Route::delete('/ourpackages/{id}', [PackageController::class, 'destroy'])->name('ourpackages.destroy');
 
 });    
 

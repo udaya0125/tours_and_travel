@@ -8,11 +8,16 @@ class Category extends Model
 {
     //
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     public function subCategories()
     {
         return $this->hasMany(SubCategory::class);
+    }
+
+    public function packages()
+    {
+        return $this->hasMany(Package::class);
     }
 }

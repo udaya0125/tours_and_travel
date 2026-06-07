@@ -8,6 +8,11 @@ class Country extends Model
 {
     //
     protected $fillable = [
-        'name'
+        'name',
     ];
+
+    public function packages()
+    {
+        return $this->hasMany(Package::class);
+    }
 }
