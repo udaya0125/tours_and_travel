@@ -1,7 +1,8 @@
 // import AddPackageForm from "@/AddNavFormComponents/AddPackageForm";
 // import AdminWrapper from "@/AdminWrapper/AdminWrapper";
+// import MyTable from "@/MyTable/MyTable";
 // import axios from "axios";
-// import { Plus, Pencil, Trash2 } from "lucide-react";
+// import { Pencil, Plus, Trash2 } from "lucide-react";
 // import React, { useEffect, useState } from "react";
 
 // const Package = () => {
@@ -12,6 +13,7 @@
 //     const [reloadTrigger, setReloadTrigger] = useState(false);
 //     const [editingPackage, setEditingPackage] = useState(null);
 //     const [showForm, setShowForm] = useState(false);
+//     const [deletingId, setDeletingId] = useState(null);
 
 //     useEffect(() => {
 //         const fetchPackage = async () => {
@@ -40,12 +42,8 @@
 //         };
 //         const fetchSubCategory = async () => {
 //             try {
-//                 const response = await axios.get(
-//                     route("oursubcategories.index")
-//                 );
-//                 setAllSubCategory(
-//                     response.data.sub_categories ?? response.data
-//                 );
+//                 const response = await axios.get(route("oursubcategories.index"));
+//                 setAllSubCategory(response.data.sub_categories ?? response.data);
 //             } catch (error) {
 //                 console.error("fetching error ", error);
 //             }
@@ -59,11 +57,14 @@
 
 //     const handleDelete = async (id) => {
 //         if (!confirm("Are you sure you want to delete this package?")) return;
+//         setDeletingId(id);
 //         try {
 //             await axios.delete(route("ourpackages.destroy", { id }));
 //             setReloadTrigger((prev) => !prev);
 //         } catch (error) {
-//             console.log(error);
+//             console.error(error);
+//         } finally {
+//             setDeletingId(null);
 //         }
 //     };
 
@@ -83,18 +84,113 @@
 //             setReloadTrigger((prev) => !prev);
 //             return response.data;
 //         } catch (error) {
-//             console.log("Error updating package", error);
+//             console.error("Error updating package", error);
 //             throw error;
 //         }
 //     };
 
+//     // Define columns for MyTable
+//     const columns = [
+//         {
+//             Header: "#",
+//             accessor: "index",
+//             Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>
+//         },
+//         {
+//             Header: "Package",
+//             accessor: "title",
+//             Cell: ({ row }) => (
+//                 <div>
+//                     <p className="font-medium text-gray-800">{row.original.title}</p>
+//                     {row.original.difficulty && (
+//                         <p className="text-xs text-gray-400 mt-0.5">
+//                             {row.original.difficulty}
+//                         </p>
+//                     )}
+//                 </div>
+//             )
+//         },
+//         {
+//             Header: "Country",
+//             accessor: "country",
+//             Cell: ({ row }) => (
+//                 <span className="text-gray-600">
+//                     {row.original.country?.name ?? "—"}
+//                 </span>
+//             )
+//         },
+//         {
+//             Header: "Price",
+//             accessor: "price",
+//             Cell: ({ value }) => (
+//                 <span className="text-gray-600 font-medium">
+//                     {value != null ? `$${value}` : "—"}
+//                 </span>
+//             )
+//         },
+//         {
+//             Header: "Duration",
+//             accessor: "duration",
+//             Cell: ({ value }) => (
+//                 <span className="text-gray-600">
+//                     {value ?? "—"}
+//                 </span>
+//             )
+//         },
+//         {
+//             Header: "Categories",
+//             accessor: "categories",
+//             Cell: ({ row }) => (
+//                 <div className="flex flex-wrap gap-1">
+//                     {row.original.categories?.map((cat) => (
+//                         <span
+//                             key={cat.id}
+//                             className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-600"
+//                         >
+//                             {cat.name}
+//                         </span>
+//                     ))}
+//                 </div>
+//             )
+//         },
+//         {
+//             Header: "Actions",
+//             accessor: "actions",
+//             Cell: ({ row }) => (
+//                 <div className="flex items-center gap-2">
+//                     <button
+//                         onClick={() => handleEdit(row.original)}
+//                         className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-100 transition-colors"
+//                         title="Edit"
+//                     >
+//                         <Pencil size={15} />
+//                     </button>
+//                     <button
+//                         onClick={() => handleDelete(row.original.id)}
+//                         disabled={deletingId === row.original.id}
+//                         className="p-2 rounded-lg text-rose-500 hover:bg-rose-100 transition-colors disabled:opacity-40"
+//                         title="Delete"
+//                     >
+//                         <Trash2 size={15} />
+//                     </button>
+//                 </div>
+//             )
+//         }
+//     ];
+
 //     return (
 //         <AdminWrapper>
+//             {/* Header */}
 //             <div className="mb-8 flex justify-between items-center">
 //                 <div>
 //                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
 //                         Package Management
 //                     </h1>
+//                     <p className="text-sm text-gray-500 mt-1">
+//                         {allPackages.length}{" "}
+//                         {allPackages.length === 1 ? "package" : "packages"}{" "}
+//                         registered
+//                     </p>
 //                 </div>
 //                 <button
 //                     onClick={() => {
@@ -108,58 +204,8 @@
 //                 </button>
 //             </div>
 
-//             {/* Package Table */}
-//             <div className="overflow-x-auto rounded-xl border border-gray-200">
-//                 <table className="min-w-full divide-y divide-gray-200 text-sm">
-//                     <thead className="bg-gray-50">
-//                         <tr>
-//                             <th className="px-4 py-3 text-left font-semibold text-gray-600">#</th>
-//                             <th className="px-4 py-3 text-left font-semibold text-gray-600">Title</th>
-//                             <th className="px-4 py-3 text-left font-semibold text-gray-600">Country</th>
-//                             <th className="px-4 py-3 text-left font-semibold text-gray-600">Category</th>
-//                             <th className="px-4 py-3 text-left font-semibold text-gray-600">Duration</th>
-//                             <th className="px-4 py-3 text-left font-semibold text-gray-600">Price</th>
-//                             <th className="px-4 py-3 text-left font-semibold text-gray-600">Actions</th>
-//                         </tr>
-//                     </thead>
-//                     <tbody className="divide-y divide-gray-100 bg-white">
-//                         {allPackages.length === 0 ? (
-//                             <tr>
-//                                 <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
-//                                     No packages found.
-//                                 </td>
-//                             </tr>
-//                         ) : (
-//                             allPackages.map((pkg, index) => (
-//                                 <tr key={pkg.id} className="hover:bg-gray-50 transition">
-//                                     <td className="px-4 py-3 text-gray-500">{index + 1}</td>
-//                                     <td className="px-4 py-3 font-medium text-gray-800">{pkg.title}</td>
-//                                     <td className="px-4 py-3 text-gray-600">{pkg.country?.name ?? "—"}</td>
-//                                     <td className="px-4 py-3 text-gray-600">{pkg.category?.name ?? "—"}</td>
-//                                     <td className="px-4 py-3 text-gray-600">{pkg.duration ?? "—"}</td>
-//                                     <td className="px-4 py-3 text-gray-600">
-//                                         {pkg.price ? `$${pkg.price}` : "—"}
-//                                     </td>
-//                                     <td className="px-4 py-3 flex items-center gap-2">
-//                                         <button
-//                                             onClick={() => handleEdit(pkg)}
-//                                             className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition"
-//                                         >
-//                                             <Pencil size={16} />
-//                                         </button>
-//                                         <button
-//                                             onClick={() => handleDelete(pkg.id)}
-//                                             className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition"
-//                                         >
-//                                             <Trash2 size={16} />
-//                                         </button>
-//                                     </td>
-//                                 </tr>
-//                             ))
-//                         )}
-//                     </tbody>
-//                 </table>
-//             </div>
+//             {/* MyTable Component */}
+//             <MyTable columns={columns} data={allPackages} />
 
 //             <AddPackageForm
 //                 showForm={showForm}
@@ -182,8 +228,10 @@
 
 import AddPackageForm from "@/AddNavFormComponents/AddPackageForm";
 import AdminWrapper from "@/AdminWrapper/AdminWrapper";
+import EditPackageForm from "@/EditNavFormComponents/EditPackageForm";
+import MyTable from "@/MyTable/MyTable";
 import axios from "axios";
-import { Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 const Package = () => {
@@ -193,7 +241,9 @@ const Package = () => {
     const [allSubCategory, setAllSubCategory] = useState([]);
     const [reloadTrigger, setReloadTrigger] = useState(false);
     const [editingPackage, setEditingPackage] = useState(null);
-    const [showForm, setShowForm] = useState(false);
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [deletingId, setDeletingId] = useState(null);
 
     useEffect(() => {
         const fetchPackage = async () => {
@@ -236,135 +286,192 @@ const Package = () => {
     }, [reloadTrigger]);
 
     const handleDelete = async (id) => {
+        if (!confirm("Are you sure you want to delete this package?")) return;
+        setDeletingId(id);
         try {
             await axios.delete(route("ourpackages.destroy", { id }));
             setReloadTrigger((prev) => !prev);
         } catch (error) {
             console.error(error);
+        } finally {
+            setDeletingId(null);
         }
     };
 
     const handleEdit = (pkg) => {
         setEditingPackage(pkg);
+        setShowEditForm(true);
     };
 
-    const handleUpdate = async (formData, id) => {
-        try {
-            formData.append("_method", "PUT");
-            const response = await axios.post(
-                route("ourpackages.update", { id }),
-                formData,
-                { headers: { "Content-Type": "multipart/form-data" } }
-            );
-            setReloadTrigger((prev) => !prev);
-            return response.data;
-        } catch (error) {
-            console.error("Error updating package", error);
-            throw error;
+    // const handleUpdate = async (formData, id) => {
+    //     try {
+    //         formData.append("_method", "PUT");
+    //         const response = await axios.post(
+    //             route("ourpackages.update", { id }),
+    //             formData,
+    //             { headers: { "Content-Type": "multipart/form-data" } }
+    //         );
+    //         setReloadTrigger((prev) => !prev);
+    //         return response.data;
+    //     } catch (error) {
+    //         console.error("Error updating package", error);
+    //         throw error;
+    //     }
+    // };
+
+    // Package.jsx
+const handleUpdate = async (formData, id) => {
+    try {
+        formData.append("_method", "PUT");
+        const response = await axios.post(
+            route("ourpackages.update", { id }),
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        // ❌ Remove this line — EditPackageForm.handleSubmit already calls setReloadTrigger
+        // setReloadTrigger((prev) => !prev);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating package", error);
+        throw error;
+    }
+};
+
+    // Define columns for MyTable
+    const columns = [
+        {
+            Header: "#",
+            accessor: "index",
+            Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>
+        },
+        {
+            Header: "Package",
+            accessor: "title",
+            Cell: ({ row }) => (
+                <div>
+                    <p className="font-medium text-gray-800">{row.original.title}</p>
+                    {row.original.difficulty && (
+                        <p className="text-xs text-gray-400 mt-0.5">
+                            {row.original.difficulty}
+                        </p>
+                    )}
+                </div>
+            )
+        },
+        {
+            Header: "Country",
+            accessor: "country",
+            Cell: ({ row }) => (
+                <span className="text-gray-600">
+                    {row.original.country?.name ?? "—"}
+                </span>
+            )
+        },
+        {
+            Header: "Price",
+            accessor: "price",
+            Cell: ({ value }) => (
+                <span className="text-gray-600 font-medium">
+                    {value != null ? `$${value}` : "—"}
+                </span>
+            )
+        },
+        {
+            Header: "Duration",
+            accessor: "duration",
+            Cell: ({ value }) => (
+                <span className="text-gray-600">
+                    {value ?? "—"}
+                </span>
+            )
+        },
+        {
+            Header: "Categories",
+            accessor: "categories",
+            Cell: ({ row }) => (
+                <div className="flex flex-wrap gap-1">
+                    {row.original.categories?.map((cat) => (
+                        <span
+                            key={cat.id}
+                            className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-600"
+                        >
+                            {cat.name}
+                        </span>
+                    ))}
+                </div>
+            )
+        },
+        {
+            Header: "Actions",
+            accessor: "actions",
+            Cell: ({ row }) => (
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => handleEdit(row.original)}
+                        className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-100 transition-colors"
+                        title="Edit"
+                    >
+                        <Pencil size={15} />
+                    </button>
+                    <button
+                        onClick={() => handleDelete(row.original.id)}
+                        disabled={deletingId === row.original.id}
+                        className="p-2 rounded-lg text-rose-500 hover:bg-rose-100 transition-colors disabled:opacity-40"
+                        title="Delete"
+                    >
+                        <Trash2 size={15} />
+                    </button>
+                </div>
+            )
         }
-    };
+    ];
 
     return (
         <AdminWrapper>
-            <div className="mb-6 flex justify-between items-center">
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
-                    Package Management
-                </h1>
+            {/* Header */}
+            <div className="mb-8 flex justify-between items-center">
+                <div>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
+                        Package Management
+                    </h1>
+                    <p className="text-sm text-gray-500 mt-1">
+                        {allPackages.length}{" "}
+                        {allPackages.length === 1 ? "package" : "packages"}{" "}
+                        registered
+                    </p>
+                </div>
                 <button
                     onClick={() => {
                         setEditingPackage(null);
-                        setShowForm(true);
+                        setShowAddForm(true);
                     }}
-                    className="px-4 py-2 flex items-center gap-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition text-sm"
+                    className="px-4 py-2 flex items-center gap-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition"
                 >
-                    <Plus size={16} />
+                    <Plus size={18} />
                     <span>Create</span>
                 </button>
             </div>
 
-            {/* Table */}
-            <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
-                <table className="w-full text-sm border-collapse">
-                    <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
-                        <tr>
-                            <th className="px-4 py-3 text-left font-medium">#</th>
-                            <th className="px-4 py-3 text-left font-medium">Package</th>
-                            <th className="px-4 py-3 text-left font-medium">Country</th>
-                            <th className="px-4 py-3 text-left font-medium">Price</th>
-                            <th className="px-4 py-3 text-left font-medium">Duration</th>
-                            <th className="px-4 py-3 text-left font-medium">Categories</th>
-                            <th className="px-4 py-3 text-left font-medium">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {allPackages.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} className="px-4 py-10 text-center text-gray-400">
-                                    No packages found. Create one to get started.
-                                </td>
-                            </tr>
-                        ) : (
-                            allPackages.map((pkg, index) => (
-                                <tr key={pkg.id} className="hover:bg-gray-50 transition-colors">
-                                      <td className="px-4 py-3 text-gray-500">{index + 1}</td>
-                                    <td className="px-4 py-3">
-                                        <p className="font-medium text-gray-800">{pkg.title}</p>
-                                        {pkg.difficulty && (
-                                            <p className="text-xs text-gray-400 mt-0.5">
-                                                {pkg.difficulty}
-                                            </p>
-                                        )}
-                                    </td>
-                                    <td className="px-4 py-3 text-gray-600">
-                                        {pkg.country?.name ?? "—"}
-                                    </td>
-                                    <td className="px-4 py-3 text-gray-600">
-                                        {pkg.price != null ? `$${pkg.price}` : "—"}
-                                    </td>
-                                    <td className="px-4 py-3 text-gray-600">
-                                        {pkg.duration ?? "—"}
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex flex-wrap gap-1">
-                                            {pkg.categories?.map((cat) => (
-                                                <span
-                                                    key={cat.id}
-                                                    className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-600"
-                                                >
-                                                    {cat.name}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleEdit(pkg)}
-                                                className="px-3 py-1.5 text-xs rounded-lg border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(pkg.id)}
-                                                className="px-3 py-1.5 text-xs rounded-lg border border-red-200 text-red-500 hover:bg-red-50 transition"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+            {/* MyTable Component */}
+            <MyTable columns={columns} data={allPackages} />
 
+            {/* Add Package Form */}
             <AddPackageForm
-                showForm={showForm}
-                setShowForm={setShowForm}
+                showForm={showAddForm}
+                setShowForm={setShowAddForm}
                 setReloadTrigger={setReloadTrigger}
+                allCountry={allCountry}
+                allCategory={allCategory}
+                allSubCategory={allSubCategory}
+            />
+
+            {/* Edit Package Form */}
+            <EditPackageForm
+                showForm={showEditForm}
+                setShowForm={setShowEditForm}
                 editingPackage={editingPackage}
                 setEditingPackage={setEditingPackage}
+                setReloadTrigger={setReloadTrigger}
                 handleUpdate={handleUpdate}
                 allCountry={allCountry}
                 allCategory={allCategory}

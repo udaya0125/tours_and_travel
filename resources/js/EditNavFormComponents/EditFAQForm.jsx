@@ -6,16 +6,23 @@ import Select from "react-select";
 
 const quillModules = {
     toolbar: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["link", "clean"],
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
+        [{ 'indent': '-1'}, { 'indent': '+1' }],
+        [{ 'align': [] }],
+        ['link', 'image', 'video'],
+        ['clean']
     ],
 };
 
 const quillFormats = [
-    "header", "bold", "italic", "underline", "strike",
-    "list", "bullet", "link",
+    'header',
+    'bold', 'italic', 'underline', 'strike',
+    'list', 'bullet', 'check',
+    'indent',
+    'align',
+    'link', 'image', 'video'
 ];
 
 const inputBase = "w-full px-3 py-2 rounded-lg border text-sm text-gray-800 outline-none transition-all border-gray-200 bg-gray-50 focus:border-gray-400 focus:ring-2 focus:ring-gray-100";
@@ -28,6 +35,125 @@ const SectionHeading = ({ children }) => (
         <div className="flex-1 h-px bg-gray-100" />
     </div>
 );
+
+// Rich Text Editor Component with scrollable content (same as AddPackageForm)
+const RichTextEditor = ({ value, onChange, placeholder }) => {
+    const [isFocused, setIsFocused] = useState(false);
+    
+    return (
+        <div className="rich-text-editor">
+            <div 
+                className={`transition-all duration-200 overflow-hidden rounded-lg`}
+                style={{
+                    border: `1px solid ${isFocused ? "#9ca3af" : "#e5e7eb"}`,
+                    borderRadius: "0.5rem",
+                }}
+            >
+                <ReactQuill
+                    theme="snow"
+                    value={value}
+                    onChange={onChange}
+                    modules={quillModules}
+                    formats={quillFormats}
+                    placeholder={placeholder}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    className="custom-quill-faq"
+                />
+            </div>
+        </div>
+    );
+};
+
+// Custom CSS for Quill editor with scrollable content (matching AddPackageForm)
+const quillCustomStyles = `
+    .custom-quill-faq {
+        display: flex;
+        flex-direction: column;
+        height: 250px;
+        min-height: 200px;
+        max-height: 400px;
+    }
+    
+    .custom-quill-faq .ql-toolbar {
+        flex-shrink: 0;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        border: none;
+        border-bottom: 1px solid #e5e7eb;
+        background-color: #ffffff;
+        padding: 8px;
+    }
+    
+    .custom-quill-faq .ql-container {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 150px;
+        max-height: 340px;
+        font-size: 0.875rem;
+        font-family: inherit;
+        border: none;
+    }
+    
+    .custom-quill-faq .ql-editor {
+        min-height: 150px;
+        max-height: 320px;
+        overflow-y: auto;
+        background-color: #f9fafb;
+        color: #1f2937;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+    
+    .custom-quill-faq .ql-editor.ql-blank::before {
+        color: #9ca3af;
+        font-style: normal;
+        font-size: 0.875rem;
+    }
+    
+    .custom-quill-faq .ql-toolbar button:hover {
+        color: #374151;
+    }
+    
+    .custom-quill-faq .ql-toolbar button.ql-active {
+        color: #111827;
+    }
+    
+    .custom-quill-faq .ql-picker-label:hover {
+        color: #374151;
+    }
+    
+    /* Scrollbar styling */
+    .custom-quill-faq .ql-editor::-webkit-scrollbar,
+    .custom-quill-faq .ql-container::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    
+    .custom-quill-faq .ql-editor::-webkit-scrollbar-track,
+    .custom-quill-faq .ql-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .custom-quill-faq .ql-editor::-webkit-scrollbar-thumb,
+    .custom-quill-faq .ql-container::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+    
+    .custom-quill-faq .ql-editor::-webkit-scrollbar-thumb:hover,
+    .custom-quill-faq .ql-container::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+`;
+
+// Inject custom styles
+if (typeof document !== 'undefined') {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = quillCustomStyles;
+    document.head.appendChild(styleElement);
+}
 
 const makeSelectStyles = (hasError = false, isDisabled = false) => ({
     control: (base, state) => ({
@@ -73,12 +199,12 @@ const makeSelectStyles = (hasError = false, isDisabled = false) => ({
         fontSize: "0.875rem",
         borderRadius: "0.375rem",
         backgroundColor: state.isSelected
-            ? "#4f46e5"
+            ? "#111827"
             : state.isFocused
-            ? "#eef2ff"
+            ? "#f3f4f6"
             : "white",
         color: state.isSelected ? "white" : "#1f2937",
-        "&:active": { backgroundColor: "#4338ca" },
+        "&:active": { backgroundColor: "#374151" },
         cursor: "pointer",
     }),
     menu: (base) => ({
@@ -234,169 +360,135 @@ const EditFAQForm = ({
     if (!showForm || !editingFaq) return null;
 
     return (
-        <>
-            <style>{`
-                .quill-faq .ql-container { 
-                    min-height: 120px; 
-                    max-height: 220px; 
-                    overflow-y: auto; 
-                    font-size: 14px; 
-                    border-bottom-left-radius: 8px; 
-                    border-bottom-right-radius: 8px; 
-                }
-                .quill-faq .ql-editor { min-height: 120px; }
-                .quill-faq .ql-toolbar.ql-snow { 
-                    border-top-left-radius: 8px; 
-                    border-top-right-radius: 8px; 
-                    border-color: #e5e7eb;
-                    background-color: #f9fafb;
-                }
-                .quill-faq .ql-container.ql-snow { 
-                    border-color: #e5e7eb;
-                    background-color: #ffffff;
-                }
-                .quill-faq .ql-toolbar.ql-snow + .ql-container.ql-snow { border-top: none; }
-                .quill-faq .ql-editor.ql-blank::before {
-                    color: #9ca3af;
-                    font-style: normal;
-                }
-            `}</style>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+            <div
+                className="bg-white rounded-xl w-full max-w-2xl border border-gray-200 overflow-hidden flex flex-col"
+                style={{ maxHeight: "calc(100vh - 2rem)" }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Header */}
+                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+                    <div className="flex items-center gap-2.5">
+                        <HelpCircle size={17} className="text-gray-400" />
+                        <span className="text-sm font-medium text-gray-800">
+                            Edit FAQ
+                        </span>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={handleClose}
+                        className="p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                    >
+                        <X size={18} />
+                    </button>
+                </div>
 
-            <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-                <div
-                    className="bg-white rounded-xl w-full max-w-2xl border border-gray-200 overflow-hidden flex flex-col"
-                    style={{ maxHeight: "calc(100vh - 2rem)" }}
-                    onClick={(e) => e.stopPropagation()}
+                {/* Scrollable body */}
+                <form
+                    onSubmit={handleSubmit}
+                    className="overflow-y-auto px-5 py-5 flex flex-col gap-4 flex-1 min-h-0"
                 >
-                    {/* Header */}
-                    <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
-                        <div className="flex items-center gap-2.5">
-                            <HelpCircle size={17} className="text-gray-400" />
-                            <span className="text-sm font-medium text-gray-800">
-                                Edit FAQ
-                            </span>
+                    {/* Category & Package */}
+                    <SectionHeading>Assignment</SectionHeading>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {/* Category */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-medium text-gray-500">
+                                Category <span className="text-red-400">*</span>
+                            </label>
+                            <Select
+                                options={categoryOptions}
+                                value={selectedCategory}
+                                onChange={(selected) => {
+                                    setCategoryId(selected ? selected.value : "");
+                                    // Don't automatically clear package here - let the validation useEffect handle it
+                                }}
+                                placeholder="— Select category —"
+                                isClearable
+                                styles={makeSelectStyles()}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                            />
                         </div>
+
+                        {/* Package */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-medium text-gray-500">
+                                Package
+                            </label>
+                            <Select
+                                options={packageOptions}
+                                value={selectedPackage}
+                                onChange={(selected) =>
+                                    setPackageId(selected ? selected.value : "")
+                                }
+                                placeholder={!categoryId ? "Select a category first" : "— Select package —"}
+                                isClearable
+                                isDisabled={!categoryId}
+                                styles={makeSelectStyles(false, !categoryId)}
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                            />
+                            {categoryId && noPackages && (
+                                <p className="text-xs text-amber-500">
+                                    No packages available for this category
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Question & Answer */}
+                    <SectionHeading>Question & Answer</SectionHeading>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-medium text-gray-500">
+                                Question <span className="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={editQa.question}
+                                onChange={(e) =>
+                                    setEditQa((prev) => ({ ...prev, question: e.target.value }))
+                                }
+                                required
+                                placeholder="Enter the question"
+                                className={inputBase}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-medium text-gray-500">
+                                Answer <span className="text-red-400">*</span>
+                            </label>
+                            <RichTextEditor
+                                value={editQa.answer}
+                                onChange={(value) =>
+                                    setEditQa((prev) => ({ ...prev, answer: value }))
+                                }
+                                placeholder="Write a clear, helpful answer..."
+                            />
+                        </div>
+                    </div>
+
+                    {/* Footer Buttons */}
+                    <div className="flex gap-2.5 pt-3 mt-1 border-t border-gray-100 shrink-0">
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                            className="flex-1 px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
                         >
-                            <X size={18} />
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="flex-1 px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {submitting ? "Saving..." : "Save changes"}
                         </button>
                     </div>
-
-                    {/* Scrollable body */}
-                    <form
-                        onSubmit={handleSubmit}
-                        className="overflow-y-auto px-5 py-5 flex flex-col gap-4 flex-1 min-h-0"
-                    >
-                        {/* Category & Package */}
-                        <SectionHeading>Assignment</SectionHeading>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {/* Category */}
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-gray-500">
-                                    Category <span className="text-red-400">*</span>
-                                </label>
-                                <Select
-                                    options={categoryOptions}
-                                    value={selectedCategory}
-                                    onChange={(selected) => {
-                                        setCategoryId(selected ? selected.value : "");
-                                        // Don't automatically clear package here - let the validation useEffect handle it
-                                    }}
-                                    placeholder="— Select category —"
-                                    isClearable
-                                    styles={makeSelectStyles()}
-                                    menuPortalTarget={document.body}
-                                    menuPosition="fixed"
-                                />
-                            </div>
-
-                            {/* Package */}
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-gray-500">
-                                    Package
-                                </label>
-                                <Select
-                                    options={packageOptions}
-                                    value={selectedPackage}
-                                    onChange={(selected) =>
-                                        setPackageId(selected ? selected.value : "")
-                                    }
-                                    placeholder={!categoryId ? "Select a category first" : "— Select package —"}
-                                    isClearable
-                                    isDisabled={!categoryId}
-                                    styles={makeSelectStyles(false, !categoryId)}
-                                    menuPortalTarget={document.body}
-                                    menuPosition="fixed"
-                                />
-                                {categoryId && noPackages && (
-                                    <p className="text-xs text-amber-500">
-                                        No packages available for this category
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Question & Answer */}
-                        <SectionHeading>Question & Answer</SectionHeading>
-                        <div className="flex flex-col gap-4">
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-gray-500">
-                                    Question <span className="text-red-400">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    value={editQa.question}
-                                    onChange={(e) =>
-                                        setEditQa((prev) => ({ ...prev, question: e.target.value }))
-                                    }
-                                    required
-                                    placeholder="Enter the question"
-                                    className={inputBase}
-                                />
-                            </div>
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-gray-500">
-                                    Answer <span className="text-red-400">*</span>
-                                </label>
-                                <div className="quill-faq">
-                                    <ReactQuill
-                                        theme="snow"
-                                        value={editQa.answer}
-                                        onChange={(value) =>
-                                            setEditQa((prev) => ({ ...prev, answer: value }))
-                                        }
-                                        modules={quillModules}
-                                        formats={quillFormats}
-                                        placeholder="Write a clear, helpful answer..."
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Footer Buttons */}
-                        <div className="flex gap-2.5 pt-3 mt-1 border-t border-gray-100 shrink-0">
-                            <button
-                                type="button"
-                                onClick={handleClose}
-                                className="flex-1 px-4 py-2 rounded-full border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={submitting}
-                                className="flex-1 px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {submitting ? "Saving..." : "Save changes"}
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
-        </>
+        </div>
     );
 };
 

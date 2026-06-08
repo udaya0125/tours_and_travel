@@ -101,6 +101,11 @@ Route::get('/dashboard', function () {
     Route::post('/ourpackages', [PackageController::class, 'store'])->name('ourpackages.store');
     Route::put('/ourpackages/{id}', [PackageController::class, 'update'])->name('ourpackages.update');
     Route::delete('/ourpackages/{id}', [PackageController::class, 'destroy'])->name('ourpackages.destroy');
+    // Single image delete
+Route::delete('/packages/{packageId}/images/{imageId}', [PackageController::class, 'destroyImage']);
+
+// Bulk image delete
+Route::delete('/packages/{packageId}/images', [PackageController::class, 'destroyImages']);
 
     Route::get('/faqs',function(){
         return Inertia::render('NavPages/FAQ');
