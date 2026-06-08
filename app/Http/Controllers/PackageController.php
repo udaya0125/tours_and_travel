@@ -8,7 +8,6 @@ use App\Models\PackageItinerary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class PackageController extends Controller
 {
@@ -19,10 +18,11 @@ class PackageController extends Controller
     {
         $packages = Package::with([
             'country',
-            'category',
+            'categories',
             'subCategory',
             'images',
             'itineraries',
+            'faqs',
         ])->latest()->get();
 
         return response()->json($packages);
@@ -35,13 +35,20 @@ class PackageController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'slug'              => Str::slug($request->title) . '-' . uniqid(), // 👈 add this
+
             'country_id' => 'required|exists:countries,id',
-            'category_id' => 'required|exists:categories,id',
+
+            'category_ids' => 'required|array|min:1',
+            'category_ids.*' => 'exists:categories,id',
+
             'sub_category_id' => 'nullable|exists:sub_categories,id',
 
             'short_description' => 'nullable|string',
             'long_description' => 'nullable|string',
+
+            'include' => 'nullable|string',
+            'exclude' => 'nullable|string',
+            'highlight' => 'nullable|string',
 
             'duration' => 'nullable|string',
             'difficulty' => 'nullable|string',
@@ -51,19 +58,23 @@ class PackageController extends Controller
             'meals' => 'nullable|string',
             'start_point' => 'nullable|string',
             'end_point' => 'nullable|string',
+
             'price' => 'nullable|numeric',
 
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+
+            'itineraries' => 'nullable|array',
+            'itineraries.*.day' => 'required',
+            'itineraries.*.title' => 'required|string',
+            'itineraries.*.description' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
 
         try {
-
             $package = Package::create([
                 'title' => $request->title,
                 'country_id' => $request->country_id,
-                'category_id' => $request->category_id,
                 'sub_category_id' => $request->sub_category_id,
 
                 'short_description' => $request->short_description,
@@ -81,14 +92,16 @@ class PackageController extends Controller
                 'meals' => $request->meals,
                 'start_point' => $request->start_point,
                 'end_point' => $request->end_point,
+
                 'price' => $request->price,
             ]);
 
+            // Sync Categories
+            $package->categories()->sync($request->category_ids);
+
             // Upload Images
             if ($request->hasFile('images')) {
-
                 foreach ($request->file('images') as $image) {
-
                     $path = $image->store('packages', 'public');
 
                     PackageImage::create([
@@ -98,16 +111,14 @@ class PackageController extends Controller
                 }
             }
 
-            // Store Itinerary
-            if ($request->itineraries) {
-
+            // Store Itineraries
+            if ($request->filled('itineraries')) {
                 foreach ($request->itineraries as $item) {
-
                     PackageItinerary::create([
                         'package_id' => $package->id,
                         'day' => $item['day'],
                         'title' => $item['title'],
-                        'description' => $item['description'],
+                        'description' => $item['description'] ?? null,
                     ]);
                 }
             }
@@ -116,7 +127,14 @@ class PackageController extends Controller
 
             return response()->json([
                 'message' => 'Package created successfully',
-                'data' => $package->load('images', 'itineraries'),
+                'data' => $package->load([
+                    'country',
+                    'categories',
+                    'subCategory',
+                    'images',
+                    'itineraries',
+                    'faqs',
+                ]),
             ], 201);
 
         } catch (\Exception $e) {
@@ -130,21 +148,71 @@ class PackageController extends Controller
     }
 
     /**
+     * Show Single Package
+     */
+    public function show($id)
+    {
+        $package = Package::with([
+            'country',
+            'categories',
+            'subCategory',
+            'images',
+            'itineraries',
+            'faqs',
+        ])->findOrFail($id);
+
+        return response()->json($package);
+    }
+
+    /**
      * Update Package
      */
     public function update(Request $request, $id)
     {
         $package = Package::findOrFail($id);
 
+        $request->validate([
+            'title' => 'required|string|max:255',
+
+            'country_id' => 'required|exists:countries,id',
+
+            'category_ids' => 'required|array|min:1',
+            'category_ids.*' => 'exists:categories,id',
+
+            'sub_category_id' => 'nullable|exists:sub_categories,id',
+
+            'short_description' => 'nullable|string',
+            'long_description' => 'nullable|string',
+
+            'include' => 'nullable|string',
+            'exclude' => 'nullable|string',
+            'highlight' => 'nullable|string',
+
+            'duration' => 'nullable|string',
+            'difficulty' => 'nullable|string',
+            'max_altitude' => 'nullable|string',
+            'best_season' => 'nullable|string',
+            'accommodation' => 'nullable|string',
+            'meals' => 'nullable|string',
+            'start_point' => 'nullable|string',
+            'end_point' => 'nullable|string',
+
+            'price' => 'nullable|numeric',
+
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+
+            'itineraries' => 'nullable|array',
+            'itineraries.*.day' => 'required',
+            'itineraries.*.title' => 'required|string',
+            'itineraries.*.description' => 'nullable|string',
+        ]);
+
         DB::beginTransaction();
 
         try {
-
             $package->update([
                 'title' => $request->title,
-                'slug'  => Str::slug($request->title) . '-' . uniqid(),
                 'country_id' => $request->country_id,
-                'category_id' => $request->category_id,
                 'sub_category_id' => $request->sub_category_id,
 
                 'short_description' => $request->short_description,
@@ -162,16 +230,16 @@ class PackageController extends Controller
                 'meals' => $request->meals,
                 'start_point' => $request->start_point,
                 'end_point' => $request->end_point,
+
                 'price' => $request->price,
             ]);
 
-            /**
-             * Add New Images
-             */
+            // Update Categories
+            $package->categories()->sync($request->category_ids);
+
+            // Add New Images
             if ($request->hasFile('images')) {
-
                 foreach ($request->file('images') as $image) {
-
                     $path = $image->store('packages', 'public');
 
                     PackageImage::create([
@@ -181,20 +249,17 @@ class PackageController extends Controller
                 }
             }
 
-            /**
-             * Replace Itinerary
-             */
-            if ($request->itineraries) {
+            // Replace Itineraries
+            if ($request->filled('itineraries')) {
 
                 $package->itineraries()->delete();
 
                 foreach ($request->itineraries as $item) {
-
                     PackageItinerary::create([
                         'package_id' => $package->id,
                         'day' => $item['day'],
                         'title' => $item['title'],
-                        'description' => $item['description'],
+                        'description' => $item['description'] ?? null,
                     ]);
                 }
             }
@@ -203,7 +268,14 @@ class PackageController extends Controller
 
             return response()->json([
                 'message' => 'Package updated successfully',
-                'data' => $package->load('images', 'itineraries'),
+                'data' => $package->load([
+                    'country',
+                    'categories',
+                    'subCategory',
+                    'images',
+                    'itineraries',
+                    'faqs',
+                ]),
             ]);
 
         } catch (\Exception $e) {
@@ -221,22 +293,31 @@ class PackageController extends Controller
      */
     public function destroy($id)
     {
-        $package = Package::with('images')->findOrFail($id);
+        $package = Package::with([
+            'images',
+            'itineraries',
+            'categories',
+        ])->findOrFail($id);
 
         DB::beginTransaction();
 
         try {
 
+            // Delete Image Files
             foreach ($package->images as $image) {
-
                 if (Storage::disk('public')->exists($image->image)) {
                     Storage::disk('public')->delete($image->image);
                 }
             }
 
+            // Delete Related Records
             $package->images()->delete();
             $package->itineraries()->delete();
 
+            // Remove Category Relations
+            $package->categories()->detach();
+
+            // Delete Package
             $package->delete();
 
             DB::commit();

@@ -166,7 +166,7 @@
 
 import AddCategoryForm from "@/AddNavFormComponents/AddCategoryForm";
 import AdminWrapper from "@/AdminWrapper/AdminWrapper";
-import MyTable from "@/MyTable/MyTable";
+import MyTable from "@/MyTable.jsx/MyTable";
 import axios from "axios";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";

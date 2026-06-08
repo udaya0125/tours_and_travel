@@ -33,8 +33,10 @@ const FAQ = () => {
 
         const fetchPackages = async () => {
             try {
+                // const res = await axios.get(route("ourpackages.index"));
+                // const raw = res.data.packages ?? res.data.data ?? res.data ?? [];
                 const res = await axios.get(route("ourpackages.index"));
-                const raw = res.data.packages ?? res.data.data ?? res.data ?? [];
+const raw = res.data.packages ?? res.data.data ?? res.data ?? [];
                 setAllPackages(Array.isArray(raw) ? raw : Object.values(raw));
             } catch (err) {
                 console.error("Package fetch error", err);
@@ -45,6 +47,10 @@ const FAQ = () => {
         fetchPackages();
         fetchFaqs();
     }, [reloadTrigger]);
+
+    console.log("Fetched FAQs:", allFaqs);
+    console.log("Fetched Categories:", allCategories);
+    console.log("Fetched Packages:", allPackages);
 
     const handleDelete = async (id) => {
         if (!confirm("Delete this FAQ?")) return;
@@ -99,7 +105,7 @@ const FAQ = () => {
                 <table className="min-w-full divide-y divide-gray-200 text-sm">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="px-4 py-3 text-left font-semibold text-gray-600">#</th>
+                            <th className="px-4 py-3 text-left font-semibold text-gray-600">S.N</th>
                             <th className="px-4 py-3 text-left font-semibold text-gray-600">Question</th>
                             <th className="px-4 py-3 text-left font-semibold text-gray-600">Category</th>
                             <th className="px-4 py-3 text-left font-semibold text-gray-600">Package</th>
@@ -124,7 +130,7 @@ const FAQ = () => {
                                         {faq.category?.name ?? <span className="text-gray-300">—</span>}
                                     </td>
                                     <td className="px-4 py-3 text-gray-600">
-                                        {faq.package?.name ?? <span className="text-gray-300">—</span>}
+                                        {faq.package?.title ?? <span className="text-gray-300">—</span>}
                                     </td>
                                     <td className="px-4 py-3 flex items-center gap-2">
                                         <button

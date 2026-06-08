@@ -9,7 +9,7 @@ class Package extends Model
 {
     //
     protected $fillable = [
-        'title', 'country_id', 'category_id', 'sub_category_id', 'short_description', 'long_description', 'include', 'exclude', 'highlight', 'duration', 'difficulty', 'max_altitude', 'best_season', 'accommodation', 'meals', 'start_point', 'end_point', 'price', 'slug',
+        'title', 'country_id', 'sub_category_id', 'short_description', 'long_description', 'include', 'exclude', 'highlight', 'duration', 'difficulty', 'max_altitude', 'best_season', 'accommodation', 'meals', 'start_point', 'end_point', 'price', 'slug',
     ];
 
     protected static function boot()
@@ -45,9 +45,14 @@ class Package extends Model
         return $this->belongsTo(Country::class);
     }
 
-    public function category()
+    // public function packageCategories()
+    // {
+    //     return $this->hasMany(PackageCategory::class);
+    // }
+
+    public function categories()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class, 'package_categories');
     }
 
     public function subCategory()
