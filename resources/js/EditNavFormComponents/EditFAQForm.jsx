@@ -474,14 +474,14 @@ const EditFAQForm = ({
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="flex-1 px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+                            className="flex-1 px-4 py-2 rounded-full border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="flex-1 px-4 py-2 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {submitting ? "Saving..." : "Save changes"}
                         </button>
