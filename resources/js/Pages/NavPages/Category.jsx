@@ -1,7 +1,7 @@
 import AddCategoryForm from "@/AddNavFormComponents/AddCategoryForm";
 import AdminWrapper from "@/AdminWrapper/AdminWrapper";
 import EditCategoryForm from "@/EditNavFormComponents/EditCategoryForm";
-import MyTable from "@/MyTable.jsx/MyTable";
+import MyTable from "@/MyTable/MyTable";
 import axios from "axios";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -77,10 +77,10 @@ const Category = () => {
 
     // Define columns for MyTable
     const columns = [
-        {
-            Header: "S.N.",
-            accessor: "serialNumber",
-            Cell: ({ value }) => <span className="text-gray-500">{value}</span>,
+       {
+            Header: "#",
+            accessor: "index",
+            Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>
         },
         {
             Header: "Name",

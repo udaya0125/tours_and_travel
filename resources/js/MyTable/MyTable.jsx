@@ -380,9 +380,15 @@ const MyTable = ({ columns, data }) => {
                                         rowIdx % 2 === 0 ? "bg-gray-100" : "bg-gray-50"
                                     }`}
                                 >
-                                    {columns.map((col, colIdx) => {
+                                    {columns.map((col) => {
                                         const value = col.Cell
-                                            ? col.Cell({ value: row[col.accessor], row: { original: row } })
+                                            ? col.Cell({
+                                                value: row[col.accessor],
+                                                row: {
+                                                    original: row,
+                                                    index: safePage * pageSize + rowIdx,
+                                                },
+                                              })
                                             : row[col.accessor];
                                         return (
                                             <td
