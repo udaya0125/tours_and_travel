@@ -719,11 +719,11 @@ const Package = () => {
                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                         Package Management
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
+                    {/* <p className="text-sm text-gray-500 mt-1">
                         {allPackages.length}{" "}
                         {allPackages.length === 1 ? "package" : "packages"}{" "}
                         registered
-                    </p>
+                    </p> */}
                 </div>
                 <button
                     onClick={() => {
