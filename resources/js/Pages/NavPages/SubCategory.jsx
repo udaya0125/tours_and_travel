@@ -364,11 +364,11 @@ const SubCategory = () => {
                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                         SubCategory Management
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
+                    {/* <p className="text-sm text-gray-500 mt-1">
                         {allSubCategory.length}{" "}
                         {allSubCategory.length === 1 ? "subcategory" : "subcategories"}{" "}
                         registered
-                    </p>
+                    </p> */}
                 </div>
                 <button
                     onClick={() => setShowAddForm(true)}
