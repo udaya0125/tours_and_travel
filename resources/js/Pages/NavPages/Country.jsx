@@ -294,11 +294,11 @@ const Country = () => {
                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                         Country Management
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
+                    {/* <p className="text-sm text-gray-500 mt-1">
                         {allCountry.length}{" "}
                         {allCountry.length === 1 ? "country" : "countries"}{" "}
                         registered
-                    </p>
+                    </p> */}
                 </div>
                 <button
                     onClick={() => setShowAddForm(true)}
