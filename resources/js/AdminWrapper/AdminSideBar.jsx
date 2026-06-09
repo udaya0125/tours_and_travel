@@ -291,6 +291,7 @@ const AdminSideBar = ({
     const currentPath = "/" + url.split("/")[1];
 
     const isActive = (href) => currentPath === href;
+      const user = usePage().props.auth.user;
 
     return (
         <>
@@ -327,7 +328,7 @@ const AdminSideBar = ({
                             <Link href="/" className="group">
                                 <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:shadow-md">
                                     <img
-                                        src="/images/logo.png"
+                                        src={user.image ? user.image : "/images/logo.png"}
                                         alt="logo"
                                         className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                                         onError={(e) => {

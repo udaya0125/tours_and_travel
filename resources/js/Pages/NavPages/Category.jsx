@@ -3,8 +3,9 @@ import AdminWrapper from "@/AdminWrapper/AdminWrapper";
 import EditCategoryForm from "@/EditNavFormComponents/EditCategoryForm";
 import MyTable from "@/MyTable/MyTable";
 import axios from "axios";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Edit, Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { BiSolidEdit, BiTrash } from "react-icons/bi";
 
 const Category = () => {
     const [allCategory, setAllCategory] = useState([]);
@@ -78,7 +79,7 @@ const Category = () => {
     // Define columns for MyTable
     const columns = [
        {
-            Header: "#",
+            Header: "S.N.",
             accessor: "index",
             Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>
         },
@@ -107,14 +108,14 @@ const Category = () => {
                         className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
                         title="Edit"
                     >
-                        <Pencil size={16} />
+                        <BiSolidEdit size={16} />
                     </button>
                     <button
                         onClick={() => handleDelete(row.original.original.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
+                        className="p-2 rounded-lg text-rose-500 hover:bg-rose-100 transition-colors disabled:opacity-40"
                         title="Delete"
                     >
-                        <Trash2 size={16} />
+                        <BiTrash size={16} />
                     </button>
                 </div>
             ),

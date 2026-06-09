@@ -25,3 +25,31 @@ select:focus {
   box-shadow: none !important; /* Remove box shadow */
   border-color: inherit !important; /* Reset border color */
 }
+
+
+/* ─────────────────────────────────────────
+   Google Fonts — loaded globally in app.css
+   ───────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap');
+
+/* ─────────────────────────────────────────
+   Font custom properties — available app-wide
+   ───────────────────────────────────────── */
+:root {
+  --font-display: 'Instrument Serif', serif;
+  --font-body:    'Inter', sans-serif;
+}
+
+/* ─────────────────────────────────────────
+   Base reset
+   ───────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -224,8 +224,6 @@
 
 // export default Package;
 
-
-
 import AddPackageForm from "@/AddNavFormComponents/AddPackageForm";
 import AdminWrapper from "@/AdminWrapper/AdminWrapper";
 import EditPackageForm from "@/EditNavFormComponents/EditPackageForm";
@@ -233,6 +231,7 @@ import MyTable from "@/MyTable/MyTable";
 import axios from "axios";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { BiSolidEdit, BiTrash } from "react-icons/bi";
 
 const Package = () => {
     const [allPackages, setAllPackages] = useState([]);
@@ -272,8 +271,12 @@ const Package = () => {
         };
         const fetchSubCategory = async () => {
             try {
-                const response = await axios.get(route("oursubcategories.index"));
-                setAllSubCategory(response.data.sub_categories ?? response.data);
+                const response = await axios.get(
+                    route("oursubcategories.index"),
+                );
+                setAllSubCategory(
+                    response.data.sub_categories ?? response.data,
+                );
             } catch (error) {
                 console.error("fetching error ", error);
             }
@@ -320,43 +323,47 @@ const Package = () => {
     // };
 
     // Package.jsx
-const handleUpdate = async (formData, id) => {
-    try {
-        formData.append("_method", "PUT");
-        const response = await axios.post(
-            route("ourpackages.update", { id }),
-            formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
-        );
-        // ❌ Remove this line — EditPackageForm.handleSubmit already calls setReloadTrigger
-        // setReloadTrigger((prev) => !prev);
-        return response.data;
-    } catch (error) {
-        console.error("Error updating package", error);
-        throw error;
-    }
-};
+    const handleUpdate = async (formData, id) => {
+        try {
+            formData.append("_method", "PUT");
+            const response = await axios.post(
+                route("ourpackages.update", { id }),
+                formData,
+                { headers: { "Content-Type": "multipart/form-data" } },
+            );
+            // ❌ Remove this line — EditPackageForm.handleSubmit already calls setReloadTrigger
+            // setReloadTrigger((prev) => !prev);
+            return response.data;
+        } catch (error) {
+            console.error("Error updating package", error);
+            throw error;
+        }
+    };
 
     // Define columns for MyTable
     const columns = [
         {
-            Header: "#",
+            Header: "S.N.",
             accessor: "index",
-            Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>
+            Cell: ({ row }) => (
+                <span className="text-gray-400">{row.index + 1}</span>
+            ),
         },
         {
             Header: "Package",
             accessor: "title",
             Cell: ({ row }) => (
                 <div>
-                    <p className="font-medium text-gray-800">{row.original.title}</p>
+                    <p className="font-medium text-gray-800">
+                        {row.original.title}
+                    </p>
                     {row.original.difficulty && (
                         <p className="text-xs text-gray-400 mt-0.5">
                             {row.original.difficulty}
                         </p>
                     )}
                 </div>
-            )
+            ),
         },
         {
             Header: "Country",
@@ -365,25 +372,7 @@ const handleUpdate = async (formData, id) => {
                 <span className="text-gray-600">
                     {row.original.country?.name ?? "—"}
                 </span>
-            )
-        },
-        {
-            Header: "Price",
-            accessor: "price",
-            Cell: ({ value }) => (
-                <span className="text-gray-600 font-medium">
-                    {value != null ? `$${value}` : "—"}
-                </span>
-            )
-        },
-        {
-            Header: "Duration",
-            accessor: "duration",
-            Cell: ({ value }) => (
-                <span className="text-gray-600">
-                    {value ?? "—"}
-                </span>
-            )
+            ),
         },
         {
             Header: "Categories",
@@ -399,7 +388,37 @@ const handleUpdate = async (formData, id) => {
                         </span>
                     ))}
                 </div>
-            )
+            ),
+        },
+        {
+            Header: "Created Time",
+            accessor: "created_at_time",
+            Cell: ({ row }) => (
+                <span className="text-gray-400">
+                    {new Date(row.original.created_at).toLocaleTimeString(
+                        "en-US",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                        },
+                    )}
+                </span>
+            ),
+        },
+        {
+            Header: "Created At",
+            accessor: "created_at",
+            Cell: ({ value }) => (
+                <span className="text-gray-400">
+                    {new Date(value).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                    })}
+                </span>
+            ),
         },
         {
             Header: "Actions",
@@ -411,7 +430,7 @@ const handleUpdate = async (formData, id) => {
                         className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-100 transition-colors"
                         title="Edit"
                     >
-                        <Pencil size={15} />
+                        <BiSolidEdit size={16} />
                     </button>
                     <button
                         onClick={() => handleDelete(row.original.id)}
@@ -419,11 +438,11 @@ const handleUpdate = async (formData, id) => {
                         className="p-2 rounded-lg text-rose-500 hover:bg-rose-100 transition-colors disabled:opacity-40"
                         title="Delete"
                     >
-                        <Trash2 size={15} />
+                        <BiTrash size={16} />
                     </button>
                 </div>
-            )
-        }
+            ),
+        },
     ];
 
     return (
@@ -482,8 +501,6 @@ const handleUpdate = async (formData, id) => {
 };
 
 export default Package;
-
-
 
 // import AddPackageForm from "@/AddNavFormComponents/AddPackageForm";
 // import AdminWrapper from "@/AdminWrapper/AdminWrapper";

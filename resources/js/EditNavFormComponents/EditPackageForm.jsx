@@ -856,7 +856,6 @@ const RichTextEditor = ({ value, onChange, error, placeholder }) => {
     );
 };
 
-// Small version of RichTextEditor for itinerary descriptions
 const RichTextEditorSmall = ({ value, onChange, placeholder }) => {
     const [isFocused, setIsFocused] = useState(false);
     return (
@@ -904,19 +903,36 @@ const quillCustomStyles = `
     .custom-quill .ql-editor::-webkit-scrollbar-track, .custom-quill .ql-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
     .custom-quill .ql-editor::-webkit-scrollbar-thumb, .custom-quill .ql-container::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
     .custom-quill .ql-editor::-webkit-scrollbar-thumb:hover, .custom-quill .ql-container::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
-    
-    /* Small editor styles for itinerary */
-    .custom-quill-small { display: flex; flex-direction: column; height: auto; min-height: 100px; max-height: 200px; }
-    .custom-quill-small .ql-toolbar { flex-shrink: 0; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; border: none; border-bottom: 1px solid #e5e7eb; background-color: #ffffff; padding: 6px; }
-    .custom-quill-small .ql-container { flex: 1; overflow-y: auto; min-height: 80px; max-height: 160px; font-size: 0.875rem; font-family: inherit; border: none; }
-    .custom-quill-small .ql-editor { min-height: 80px; max-height: 150px; overflow-y: auto; background-color: #f9fafb; color: #1f2937; font-size: 0.875rem; line-height: 1.5; }
+
+    /* Small editor — mobile-first */
+    .custom-quill-small { display: flex; flex-direction: column; height: auto; min-height: 90px; max-height: 180px; }
+    .custom-quill-small .ql-toolbar { flex-shrink: 0; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; border: none; border-bottom: 1px solid #e5e7eb; background-color: #ffffff; padding: 5px; flex-wrap: wrap; }
+    .custom-quill-small .ql-container { flex: 1; overflow-y: auto; min-height: 70px; max-height: 140px; font-size: 0.875rem; font-family: inherit; border: none; }
+    .custom-quill-small .ql-editor { min-height: 70px; max-height: 130px; overflow-y: auto; background-color: #f9fafb; color: #1f2937; font-size: 0.875rem; line-height: 1.5; }
     .custom-quill-small .ql-editor.ql-blank::before { color: #9ca3af; font-style: normal; font-size: 0.875rem; }
-    .custom-quill-small .ql-toolbar button { padding: 4px; }
+    .custom-quill-small .ql-toolbar button { padding: 3px; }
     .custom-quill-small .ql-toolbar button:hover { color: #374151; }
     .custom-quill-small .ql-toolbar button.ql-active { color: #111827; }
     .custom-quill-small .ql-editor::-webkit-scrollbar, .custom-quill-small .ql-container::-webkit-scrollbar { width: 6px; height: 6px; }
     .custom-quill-small .ql-editor::-webkit-scrollbar-track, .custom-quill-small .ql-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
     .custom-quill-small .ql-editor::-webkit-scrollbar-thumb, .custom-quill-small .ql-container::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+    .custom-quill-small .ql-editor::-webkit-scrollbar-thumb:hover, .custom-quill-small .ql-container::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+    /* Tablet (≥640px) */
+    @media (min-width: 640px) {
+        .custom-quill-small { min-height: 100px; max-height: 200px; }
+        .custom-quill-small .ql-toolbar { padding: 6px; }
+        .custom-quill-small .ql-toolbar button { padding: 4px; }
+        .custom-quill-small .ql-container { min-height: 80px; max-height: 160px; }
+        .custom-quill-small .ql-editor { min-height: 80px; max-height: 150px; }
+    }
+
+    /* Desktop (≥1024px) */
+    @media (min-width: 1024px) {
+        .custom-quill-small { min-height: 110px; max-height: 220px; }
+        .custom-quill-small .ql-container { min-height: 90px; max-height: 180px; }
+        .custom-quill-small .ql-editor { min-height: 90px; max-height: 170px; }
+    }
 `;
 
 if (typeof document !== 'undefined') {
@@ -989,13 +1005,14 @@ const EditPackageForm = ({
 }) => {
     const [submitting, setSubmitting] = useState(false);
     const [packageForm, setPackageForm] = useState({});
-    const [selectedImages, setSelectedImages] = useState([]);      // new files to upload
-    const [existingImages, setExistingImages] = useState([]);      // images already on server
-    const [deletingImageIds, setDeletingImageIds] = useState([]);  // ids marked for deletion
+    const [selectedImages, setSelectedImages] = useState([]);
+    const [existingImages, setExistingImages] = useState([]);
+    const [deletingImageIds, setDeletingImageIds] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
     const [itineraries, setItineraries] = useState([]);
     const [errors, setErrors] = useState({});
     const [serverError, setServerError] = useState("");
+    const imgurl = import.meta.env.VITE_IMAGE_PATH;
 
     useEffect(() => {
         if (editingPackage && showForm) {
@@ -1137,8 +1154,6 @@ const EditPackageForm = ({
         if (errors.category_ids) setErrors((prev) => ({ ...prev, category_ids: undefined }));
     };
 
-    // ── Image handlers ──────────────────────────────────────────────────────────
-
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         setSelectedImages((prev) => [...prev, ...files]);
@@ -1158,14 +1173,12 @@ const EditPackageForm = ({
         setSelectedImages((prev) => prev.filter((_, i) => i !== idx));
     };
 
-    // Toggle an existing image's deletion — mark/unmark, applied on save
     const toggleExistingImageDelete = (id) => {
         setDeletingImageIds((prev) =>
             prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
         );
     };
 
-    // Mark all existing images for deletion
     const markAllExistingForDeletion = () => {
         setDeletingImageIds(existingImages.map((img) => img.id));
     };
@@ -1177,8 +1190,6 @@ const EditPackageForm = ({
     const allMarkedForDeletion =
         existingImages.length > 0 &&
         existingImages.every((img) => deletingImageIds.includes(img.id));
-
-    // ── Itinerary handlers ───────────────────────────────────────────────────────
 
     const addItinerary = () =>
         setItineraries((prev) => [...prev, { day: prev.length + 1, title: "", description: "" }]);
@@ -1382,12 +1393,10 @@ const EditPackageForm = ({
                         ))}
                     </div>
 
-                    {/* ── Images ─────────────────────────────────────────────────────────── */}
+                    {/* Images */}
                     <SectionHeading>Images</SectionHeading>
 
                     <div className="flex flex-col gap-4">
-
-                        {/* Existing images from storage */}
                         {existingImages.length > 0 && (
                             <div>
                                 <div className="flex items-center justify-between mb-2">
@@ -1399,7 +1408,6 @@ const EditPackageForm = ({
                                             </span>
                                         )}
                                     </p>
-                                    {/* Bulk select/deselect */}
                                     <button
                                         type="button"
                                         onClick={allMarkedForDeletion ? unmarkAllExistingForDeletion : markAllExistingForDeletion}
@@ -1416,7 +1424,7 @@ const EditPackageForm = ({
                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
                                     {existingImages.map((img) => {
                                         const markedForDeletion = deletingImageIds.includes(img.id);
-                                        const imageUrl = `/storage/${img.image}`;
+                                        const imageUrl = `${imgurl}/${img.image}`;
                                         return (
                                             <div
                                                 key={img.id}
@@ -1427,13 +1435,7 @@ const EditPackageForm = ({
                                                 }`}
                                                 style={{ aspectRatio: "1 / 1" }}
                                             >
-                                                <img
-                                                    src={imageUrl}
-                                                    alt="existing"
-                                                    className="w-full h-full object-cover"
-                                                />
-
-                                                {/* Deletion badge */}
+                                                <img src={imageUrl} alt="existing" className="w-full h-full object-cover" />
                                                 {markedForDeletion && (
                                                     <div className="absolute inset-0 flex items-center justify-center bg-red-50/60 pointer-events-none">
                                                         <span className="text-[10px] font-semibold text-red-500 bg-white/90 px-2 py-0.5 rounded-full shadow-sm">
@@ -1441,8 +1443,6 @@ const EditPackageForm = ({
                                                         </span>
                                                     </div>
                                                 )}
-
-                                                {/* Hover overlay */}
                                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center">
                                                     <button
                                                         type="button"
@@ -1454,14 +1454,9 @@ const EditPackageForm = ({
                                                         }`}
                                                         title={markedForDeletion ? "Undo remove" : "Mark for removal"}
                                                     >
-                                                        {markedForDeletion
-                                                            ? <X size={13} />
-                                                            : <Trash2 size={13} />
-                                                        }
+                                                        {markedForDeletion ? <X size={13} /> : <Trash2 size={13} />}
                                                     </button>
                                                 </div>
-
-                                                {/* File path tooltip */}
                                                 <div className="absolute bottom-0 left-0 right-0 px-2 py-1 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150">
                                                     <p className="text-[10px] text-white truncate leading-tight">
                                                         {img.image?.split("/").pop()}
@@ -1474,12 +1469,10 @@ const EditPackageForm = ({
                             </div>
                         )}
 
-                        {/* New image drop zone */}
                         <div>
                             {existingImages.length > 0 && (
                                 <p className="text-xs font-medium text-gray-500 mb-2">Add more images</p>
                             )}
-
                             <label
                                 className={`relative flex flex-col items-center justify-center gap-2.5 w-full rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 py-8 ${
                                     isDragging
@@ -1514,7 +1507,6 @@ const EditPackageForm = ({
                                 </div>
                             </label>
 
-                            {/* New image previews */}
                             {selectedImages.length > 0 && (
                                 <div className="mt-3">
                                     <p className="text-[11px] text-gray-400 mb-2">
@@ -1529,25 +1521,12 @@ const EditPackageForm = ({
                                                     className="relative group rounded-lg overflow-hidden border border-gray-200 border-dashed bg-gray-100 ring-2 ring-blue-100"
                                                     style={{ aspectRatio: "1 / 1" }}
                                                 >
-                                                    <img
-                                                        src={url}
-                                                        alt={`new-preview-${idx}`}
-                                                        className="w-full h-full object-cover"
-                                                        onLoad={() => URL.revokeObjectURL(url)}
-                                                    />
-                                                    {/* "New" badge */}
+                                                    <img src={url} alt={`new-preview-${idx}`} className="w-full h-full object-cover" onLoad={() => URL.revokeObjectURL(url)} />
                                                     <div className="absolute top-1.5 left-1.5 pointer-events-none">
-                                                        <span className="text-[9px] font-semibold bg-blue-500 text-white px-1.5 py-0.5 rounded-full shadow-sm uppercase tracking-wide">
-                                                            New
-                                                        </span>
+                                                        <span className="text-[9px] font-semibold bg-blue-500 text-white px-1.5 py-0.5 rounded-full shadow-sm uppercase tracking-wide">New</span>
                                                     </div>
-                                                    {/* Hover overlay */}
                                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeNewImage(idx)}
-                                                            className="p-1.5 rounded-full bg-white/90 text-red-500 hover:bg-white hover:scale-110 transition-all duration-150 shadow-sm"
-                                                        >
+                                                        <button type="button" onClick={() => removeNewImage(idx)} className="p-1.5 rounded-full bg-white/90 text-red-500 hover:bg-white hover:scale-110 transition-all duration-150 shadow-sm">
                                                             <Trash2 size={13} />
                                                         </button>
                                                     </div>
@@ -1569,9 +1548,12 @@ const EditPackageForm = ({
                     <SectionHeading>Itinerary</SectionHeading>
                     <div className="flex flex-col gap-3">
                         {itineraries.map((item, idx) => (
-                            <div key={idx} className="flex gap-3 items-start p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                <div className="flex flex-col gap-2 flex-1">
-                                    <div className="grid grid-cols-2 gap-2">
+                            <div
+                                key={idx}
+                                className="flex gap-2 sm:gap-3 items-start p-2.5 sm:p-3 bg-gray-50 rounded-lg border border-gray-200"
+                            >
+                                <div className="flex flex-col gap-2 flex-1 min-w-0">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <input
                                             placeholder="Day (e.g. 1)"
                                             value={item.day}
@@ -1597,7 +1579,7 @@ const EditPackageForm = ({
                                 <button
                                     type="button"
                                     onClick={() => removeItinerary(idx)}
-                                    className="mt-1 p-1.5 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
+                                    className="mt-1 p-1.5 shrink-0 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
                                 >
                                     <Trash2 size={15} />
                                 </button>

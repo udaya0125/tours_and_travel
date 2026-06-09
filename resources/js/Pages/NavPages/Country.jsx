@@ -3,8 +3,9 @@ import AdminWrapper from "@/AdminWrapper/AdminWrapper";
 import EditCountryForm from "@/EditNavFormComponents/EditCountryForm";
 import MyTable from "@/MyTable/MyTable";
 import axios from "axios";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Edit, Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { BiSolidEdit, BiTrash } from "react-icons/bi";
 
 const Country = () => {
     const [allCountry, setAllCountry] = useState([]);
@@ -47,7 +48,7 @@ const Country = () => {
     // Define columns for MyTable
     const columns = [
         {
-            Header: "#",
+            Header: "S.N.",
             accessor: "index",
             Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>
         },
@@ -90,10 +91,10 @@ const Country = () => {
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => handleEdit(row.original)}
-                        className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-100 transition-colors"
+                        className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
                         title="Edit"
                     >
-                        <Pencil size={15} />
+                        <BiSolidEdit size={16} />
                     </button>
                     <button
                         onClick={() => handleDelete(row.original.id)}
@@ -101,7 +102,7 @@ const Country = () => {
                         className="p-2 rounded-lg text-rose-500 hover:bg-rose-100 transition-colors disabled:opacity-40"
                         title="Delete"
                     >
-                        <Trash2 size={15} />
+                        <BiTrash size={16} />
                     </button>
                 </div>
             )

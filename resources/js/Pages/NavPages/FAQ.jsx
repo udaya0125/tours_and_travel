@@ -4,6 +4,7 @@ import EditFAQForm from "@/EditNavFormComponents/EditFAQForm";
 import MyTable from "@/MyTable/MyTable";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { BiSolidEdit, BiTrash } from "react-icons/bi";
 import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
 
 const FAQ = () => {
@@ -29,7 +30,8 @@ const FAQ = () => {
         const fetchCategories = async () => {
             try {
                 const res = await axios.get(route("ourcategories.index"));
-                const raw = res.data.categories ?? res.data.data ?? res.data ?? [];
+                const raw =
+                    res.data.categories ?? res.data.data ?? res.data ?? [];
                 setAllCategories(Array.isArray(raw) ? raw : Object.values(raw));
             } catch (err) {
                 console.error("Category fetch error", err);
@@ -39,7 +41,8 @@ const FAQ = () => {
         const fetchPackages = async () => {
             try {
                 const res = await axios.get(route("ourpackages.index"));
-                const raw = res.data.packages ?? res.data.data ?? res.data ?? [];
+                const raw =
+                    res.data.packages ?? res.data.data ?? res.data ?? [];
                 setAllPackages(Array.isArray(raw) ? raw : Object.values(raw));
             } catch (err) {
                 console.error("Package fetch error", err);
@@ -75,9 +78,9 @@ const FAQ = () => {
             const res = await axios.post(
                 route("ourfaqs.update", { id }),
                 formData,
-                { headers: { "Content-Type": "multipart/form-data" } }
+                { headers: { "Content-Type": "multipart/form-data" } },
             );
-            setReloadTrigger((prev) => !prev);
+            // setReloadTrigger((prev) => !prev);
             return res.data;
         } catch (err) {
             console.error("Update error", err);
@@ -87,9 +90,11 @@ const FAQ = () => {
 
     const columns = [
         {
-            Header: "#",
+            Header: "S.N.",
             accessor: "index",
-            Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>
+            Cell: ({ row }) => (
+                <span className="text-gray-400">{row.index + 1}</span>
+            ),
         },
         {
             Header: "Question",
@@ -98,38 +103,61 @@ const FAQ = () => {
                 <div className="max-w-xs">
                     <span className="text-gray-800 line-clamp-2">{value}</span>
                 </div>
-            )
+            ),
         },
         {
             Header: "Category",
             accessor: "category",
             Cell: ({ row }) => (
                 <span className="text-gray-600">
-                    {row.original.category?.name ?? <span className="text-gray-300">—</span>}
+                    {row.original.category?.name ?? (
+                        <span className="text-gray-300">—</span>
+                    )}
                 </span>
-            )
+            ),
         },
         {
             Header: "Package",
             accessor: "package",
             Cell: ({ row }) => (
                 <span className="text-gray-600">
-                    {row.original.package?.title ?? <span className="text-gray-300">—</span>}
+                    {row.original.package?.title ?? (
+                        <span className="text-gray-300">—</span>
+                    )}
                 </span>
-            )
+            ),
         },
         {
             Header: "Created At",
             accessor: "created_at",
             Cell: ({ value }) => (
                 <span className="text-gray-400">
-                    {value ? new Date(value).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                    }) : "—"}
+                    {value
+                        ? new Date(value).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                          })
+                        : "—"}
                 </span>
-            )
+            ),
+        },
+        {
+            Header: "Created Time",
+            accessor: "created_at_time",
+            Cell: ({ row }) => (
+                <span className="text-gray-400">
+                    {new Date(row.original.created_at).toLocaleTimeString(
+                        "en-US",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                        },
+                    )}
+                </span>
+            ),
         },
         {
             Header: "Actions",
@@ -138,22 +166,22 @@ const FAQ = () => {
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => handleEdit(row.original)}
-                        className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                        className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
                         title="Edit"
                     >
-                        <MdEdit size={16} />
+                        <BiSolidEdit size={16} />
                     </button>
                     <button
                         onClick={() => handleDelete(row.original.id)}
                         disabled={deletingId === row.original.id}
-                        className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors disabled:opacity-40"
+                        className="p-2 rounded-lg text-rose-500 hover:bg-rose-100 transition-colors disabled:opacity-40"
                         title="Delete"
                     >
-                        <MdDelete size={16} />
+                        <BiTrash size={16} />
                     </button>
                 </div>
-            )
-        }
+            ),
+        },
     ];
 
     return (
@@ -165,8 +193,7 @@ const FAQ = () => {
                         FAQ Management
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">
-                        {allFaqs.length}{" "}
-                        {allFaqs.length === 1 ? "FAQ" : "FAQs"}{" "}
+                        {allFaqs.length} {allFaqs.length === 1 ? "FAQ" : "FAQs"}{" "}
                         registered
                     </p>
                 </div>

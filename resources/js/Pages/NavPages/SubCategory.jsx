@@ -6,6 +6,7 @@ import MyTable from "@/MyTable/MyTable";
 import axios from "axios";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { BiSolidEdit, BiTrash } from "react-icons/bi";
 
 const SubCategory = () => {
     const [allSubCategory, setAllSubCategory] = useState([]);
@@ -79,12 +80,12 @@ const SubCategory = () => {
     // Define columns for MyTable
     const columns = [
         {
-            Header: "#",
+            Header: "S.N.",
             accessor: "index",
             Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>
         },
         {
-            Header: "SubCategory Name",
+            Header: "SubCategory",
             accessor: "name",
             Cell: ({ value }) => <span className="font-medium text-gray-800">{value}</span>
         },
@@ -134,7 +135,7 @@ const SubCategory = () => {
                         className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-100 transition-colors"
                         title="Edit"
                     >
-                        <Pencil size={15} />
+                        <BiSolidEdit size={16} />
                     </button>
                     <button
                         onClick={() => handleDelete(row.original.id)}
@@ -142,7 +143,7 @@ const SubCategory = () => {
                         className="p-2 rounded-lg text-rose-500 hover:bg-rose-100 transition-colors disabled:opacity-40"
                         title="Delete"
                     >
-                        <Trash2 size={15} />
+                        <BiTrash size={16} />
                     </button>
                 </div>
             )
