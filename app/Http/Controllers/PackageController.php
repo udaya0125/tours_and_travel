@@ -45,7 +45,7 @@ class PackageController extends Controller
             'images.*'                    => 'image|mimes:jpg,jpeg,png,webp|max:2048',
             'itineraries'                 => 'nullable|array',
             'itineraries.*.day'           => 'required',
-            'itineraries.*.title'         => 'required|string',
+            'itineraries.*.title'         => 'nullable|string',
             'itineraries.*.description'   => 'nullable|string',
         ]);
 
@@ -86,7 +86,7 @@ class PackageController extends Controller
                     PackageItinerary::create([
                         'package_id'  => $package->id,
                         'day'         => $item['day'],
-                        'title'       => $item['title'],
+                          'title'       => $item['title'] ?? null, 
                         'description' => $item['description'] ?? null,
                     ]);
                 }
@@ -143,7 +143,7 @@ class PackageController extends Controller
             'delete_image_ids.*'          => 'integer|exists:package_images,id',
             'itineraries'                 => 'nullable|array',
             'itineraries.*.day'           => 'required',
-            'itineraries.*.title'         => 'required|string',
+            'itineraries.*.title'         => 'nullable|string',
             'itineraries.*.description'   => 'nullable|string',
         ]);
 
@@ -201,7 +201,7 @@ class PackageController extends Controller
                     PackageItinerary::create([
                         'package_id'  => $package->id,
                         'day'         => $item['day'],
-                        'title'       => $item['title'],
+                        'title'       => $item['title'] ?? null, 
                         'description' => $item['description'] ?? null,
                     ]);
                 }

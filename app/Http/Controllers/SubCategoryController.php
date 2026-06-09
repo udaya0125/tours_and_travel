@@ -28,7 +28,7 @@ class SubCategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'nullable|string|max:255|unique:sub_categories,name',
+            'name' => 'nullable|string|max:255',
             'category_id' => 'required|exists:categories,id',
         ]);
 
@@ -49,7 +49,7 @@ class SubCategoryController extends Controller
         $subCategory = SubCategory::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'nullable|string|max:255|unique:sub_categories,name,' . $subCategory->id,
+            'name' => 'nullable|string|max:255',
             'category_id' => 'required|exists:categories,id',
         ]);
 

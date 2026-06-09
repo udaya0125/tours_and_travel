@@ -338,7 +338,7 @@ const AdminSideBar = ({
                         <div className="flex justify-center items-center w-full py-2">
                             <Link href="/">
                                 <img
-                                    src={user.image || "/images/logo.png"}
+                                    src={user.image || "/images/logo2.png"}
                                     alt="logo"
                                     className="h-16 w-auto object-contain"
                                 />

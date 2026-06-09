@@ -12,22 +12,64 @@ class Package extends Model
         'title', 'country_id', 'sub_category_id', 'short_description', 'long_description', 'include', 'exclude', 'highlight', 'duration', 'difficulty', 'max_altitude', 'best_season', 'accommodation', 'meals', 'start_point', 'end_point', 'price', 'slug',
     ];
 
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::creating(function ($package) {
+    //         $slug = Str::slug($package->title);
+    //         $originalSlug = $slug;
+    //         $count = 1;
+
+    //         while (self::where('slug', $slug)->exists()) {
+    //             $slug = $originalSlug.'-'.$count;
+    //             $count++;
+    //         }
+
+    //         $package->slug = $slug;
+    //     });
+    // }
+
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($package) {
-            $slug = Str::slug($package->title);
-            $originalSlug = $slug;
-            $count = 1;
-
-            while (self::where('slug', $slug)->exists()) {
-                $slug = $originalSlug.'-'.$count;
-                $count++;
-            }
-
-            $package->slug = $slug;
+            $package->slug = self::generateUniqueSlug($package->title);
         });
+
+        static::updating(function ($package) {
+            if ($package->isDirty('title')) {
+                $package->slug = self::generateUniqueSlug(
+                    $package->title,
+                    $package->id
+                );
+            }
+        });
+    }
+
+    protected static function generateUniqueSlug($title, $ignoreId = null)
+    {
+        $slug = Str::slug($title);
+        $originalSlug = $slug;
+        $count = 1;
+
+        $query = self::query();
+
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        while (
+            $query->clone()
+                ->where('slug', $slug)
+                ->exists()
+        ) {
+            $slug = $originalSlug.'-'.$count;
+            $count++;
+        }
+
+        return $slug;
     }
 
     public function images()

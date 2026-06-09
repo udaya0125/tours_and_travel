@@ -26,7 +26,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
+            'name' => 'required|string|max:255',
         ]);
 
         $category = Category::create([
@@ -47,7 +47,7 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
 
-        if (!$category) {
+        if (! $category) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Category not found.',
@@ -55,7 +55,7 @@ class CategoryController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
+            'name' => 'required|string|max:255',
         ]);
 
         $category->update([
@@ -76,7 +76,7 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
 
-        if (!$category) {
+        if (! $category) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Category not found.',

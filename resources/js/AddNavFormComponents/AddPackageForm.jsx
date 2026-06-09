@@ -439,7 +439,8 @@ const AddPackageForm = ({
         selectedImages.forEach((file) => fd.append("images[]", file));
         itineraries.forEach((item, idx) => {
             fd.append(`itineraries[${idx}][day]`, item.day);
-            fd.append(`itineraries[${idx}][title]`, item.title);
+            // fd.append(`itineraries[${idx}][title]`, item.title);
+            fd.append(`itineraries[${idx}][title]`, item.title ?? "");
             fd.append(
                 `itineraries[${idx}][description]`,
                 item.description ?? "",

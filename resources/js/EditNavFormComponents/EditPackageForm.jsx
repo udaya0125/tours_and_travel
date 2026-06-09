@@ -1089,7 +1089,8 @@ const EditPackageForm = ({
         deletingImageIds.forEach((id) => fd.append("delete_image_ids[]", id));
         itineraries.forEach((item, idx) => {
             fd.append(`itineraries[${idx}][day]`, item.day);
-            fd.append(`itineraries[${idx}][title]`, item.title);
+            // fd.append(`itineraries[${idx}][title]`, item.title);
+            fd.append(`itineraries[${idx}][title]`, item.title ?? "");
             fd.append(`itineraries[${idx}][description]`, item.description ?? "");
         });
         return fd;

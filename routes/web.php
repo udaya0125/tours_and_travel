@@ -19,6 +19,10 @@ Route::get('/', function () {
     ]);
 });
 
+    Route::get('/',function(){
+        return Inertia::render('AdminPages/Welcome');
+    });
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -34,8 +38,8 @@ Route::get('/dashboard', function () {
     // Page Routes for Welcome Page
     // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-    Route::get('/',function(){
-        return Inertia::render('AdminPages/Welcome');
+        Route::get('/dashboard',function(){
+        return Inertia::render('AdminPages/Dashboard');
     });
 
 
@@ -101,11 +105,8 @@ Route::get('/dashboard', function () {
     Route::post('/ourpackages', [PackageController::class, 'store'])->name('ourpackages.store');
     Route::put('/ourpackages/{id}', [PackageController::class, 'update'])->name('ourpackages.update');
     Route::delete('/ourpackages/{id}', [PackageController::class, 'destroy'])->name('ourpackages.destroy');
-    // Single image delete
-Route::delete('/packages/{packageId}/images/{imageId}', [PackageController::class, 'destroyImage']);
-
-// Bulk image delete
-Route::delete('/packages/{packageId}/images', [PackageController::class, 'destroyImages']);
+    Route::delete('/packages/{packageId}/images/{imageId}', [PackageController::class, 'destroyImage']);
+    Route::delete('/packages/{packageId}/images', [PackageController::class, 'destroyImages']);
 
     Route::get('/faqs',function(){
         return Inertia::render('NavPages/FAQ');

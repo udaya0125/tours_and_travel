@@ -26,7 +26,7 @@ class CountryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:countries,name',
+            'name' => 'required|string|max:255',
         ]);
 
         $country = Country::create($validated);
@@ -46,7 +46,7 @@ class CountryController extends Controller
         $country = Country::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:countries,name,' . $country->id,
+            'name' => 'required|string|max:255',
         ]);
 
         $country->update($validated);
