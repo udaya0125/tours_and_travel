@@ -266,7 +266,14 @@ import { Link, usePage } from "@inertiajs/react";
 import { RxDashboard } from "react-icons/rx";
 import { BiMenu } from "react-icons/bi";
 import { IoClose } from "react-icons/io5";
-import { LuFolderOpen, LuFolderTree, LuMap, LuMountain, LuFootprints, LuLogs } from "react-icons/lu";
+import {
+    LuFolderOpen,
+    LuFolderTree,
+    LuMap,
+    LuMountain,
+    LuFootprints,
+    LuLogs,
+} from "react-icons/lu";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { IoHelpCircleOutline } from "react-icons/io5";
 
@@ -278,7 +285,11 @@ const NAV_ITEMS = [
     { href: "/package", label: "Package", icon: LuMap },
     { href: "/faqs", label: "FAQ", icon: IoHelpCircleOutline },
     { href: "/activity-logs", label: "Activity Logs", icon: LuLogs },
-    { href: "/user-management", label: "User Management", icon: MdOutlineManageAccounts },
+    {
+        href: "/user-management",
+        label: "User Management",
+        icon: MdOutlineManageAccounts,
+    },
 ];
 
 const AdminSideBar = ({
@@ -291,7 +302,7 @@ const AdminSideBar = ({
     const currentPath = "/" + url.split("/")[1];
 
     const isActive = (href) => currentPath === href;
-      const user = usePage().props.auth.user;
+    const user = usePage().props.auth.user;
 
     return (
         <>
@@ -324,29 +335,14 @@ const AdminSideBar = ({
                     style={{ borderBottom: "1px solid #f3f4f6" }}
                 >
                     {!isCollapsed && (
-                        <div className="flex items-center gap-2.5 overflow-hidden">
-                            <Link href="/" className="group">
-                                <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:shadow-md">
-                                    <img
-                                        src={user.image ? user.image : "/images/logo.png"}
-                                        alt="logo"
-                                        className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                                        onError={(e) => {
-                                            e.target.style.display = "none";
-                                            e.target.parentNode.innerHTML =
-                                                '<span style="color:#1d4ed8;font-weight:800;font-size:15px">A</span>';
-                                        }}
-                                    />
-                                </div>
+                        <div className="flex justify-center items-center w-full py-2">
+                            <Link href="/">
+                                <img
+                                    src={user.image || "/images/logo.png"}
+                                    alt="logo"
+                                    className="h-16 w-auto object-contain"
+                                />
                             </Link>
-                            <div>
-                                <p className="font-bold text-sm text-gray-900 leading-none">
-                                    Admin Panel
-                                </p>
-                                <p className="text-[10px] text-gray-400 mt-0.5 leading-none tracking-widest uppercase font-medium">
-                                    Management
-                                </p>
-                            </div>
                         </div>
                     )}
 
@@ -434,7 +430,8 @@ const AdminSideBar = ({
                                         style={{
                                             background: "#1e293b",
                                             color: "#f8fafc",
-                                            borderColor: "rgba(255,255,255,0.06)",
+                                            borderColor:
+                                                "rgba(255,255,255,0.06)",
                                             fontSize: "12.5px",
                                         }}
                                     >
@@ -444,9 +441,12 @@ const AdminSideBar = ({
                                             style={{
                                                 width: 0,
                                                 height: 0,
-                                                borderTop: "4px solid transparent",
-                                                borderBottom: "4px solid transparent",
-                                                borderRight: "4px solid #1e293b",
+                                                borderTop:
+                                                    "4px solid transparent",
+                                                borderBottom:
+                                                    "4px solid transparent",
+                                                borderRight:
+                                                    "4px solid #1e293b",
                                             }}
                                         />
                                     </div>
