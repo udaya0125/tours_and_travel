@@ -24,6 +24,19 @@ class UpdateSubCategoryRequest extends FormRequest
     {
         return [
             //
+            'name' => 'nullable|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+        ];
+    }
+
+     /**
+     * Custom messages.
+     */
+    public function messages(): array
+    {
+        return [
+            'category_id.required' => 'Category is required.',
+            'category_id.exists' => 'Selected category does not exist.',
         ];
     }
 }
