@@ -24,6 +24,8 @@ class StoreSubCategoryRequest extends FormRequest
     {
         return [
             //
+            'name' => 'nullable|string|max:255',
+            'category_id' => 'required|exists:categories,id',
         ];
     }
 }
