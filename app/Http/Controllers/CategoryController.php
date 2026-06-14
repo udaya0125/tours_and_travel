@@ -2,36 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Services\CategoryService;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display all categories
-     */
-    public function index()
-    {
-        $categories = Category::latest()->get();
+    protected CategoryService $categoryService;
 
-        return response()->json([
-            'status' => 'success',
-            'categories' => $categories,
-        ], 200);
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
     }
 
-    /**
-     * Store a new category
-     */
-    public function store(Request $request)
+    public function index()
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
+        return response()->json([
+            'status' => 'success',
+            'categories' => $this->categoryService->getAll(),
         ]);
+    }
 
-        $category = Category::create([
-            'name' => $validated['name'],
-        ]);
+    public function store(StoreCategoryRequest $request)
+    {
+        $category = $this->categoryService->create(
+            $request->validated()
+        );
 
         return response()->json([
             'status' => 'success',
@@ -40,54 +37,55 @@ class CategoryController extends Controller
         ], 201);
     }
 
-    /**
-     * Update a category
-     */
-    public function update(Request $request, $id)
+    // public function update(UpdateCategoryRequest $request, Category $category)
+    // {
+    //     $category = $this->categoryService->update(
+    //         $category,
+    //         $request->validated()
+    //     );
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Category updated successfully.',
+    //         'category' => $category,
+    //     ]);
+    // }
+
+    public function update(UpdateCategoryRequest $request, $id)
     {
-        $category = Category::find($id);
+        $category = Category::findOrFail($id);
 
-        if (! $category) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Category not found.',
-            ], 404);
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        $category->update([
-            'name' => $validated['name'],
-        ]);
+        $category = $this->categoryService->update(
+            $category,
+            $request->validated()
+        );
 
         return response()->json([
             'status' => 'success',
             'message' => 'Category updated successfully.',
             'category' => $category,
-        ], 200);
+        ]);
     }
 
-    /**
-     * Delete a category
-     */
+    // public function destroy(Category $category)
+    // {
+    //     $this->categoryService->delete($category);
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Category deleted successfully.',
+    //     ]);
+    // }
+
     public function destroy($id)
     {
-        $category = Category::find($id);
+        $category = Category::findOrFail($id);
 
-        if (! $category) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Category not found.',
-            ], 404);
-        }
-
-        $category->delete();
+        $this->categoryService->delete($category);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Category deleted successfully.',
-        ], 200);
+        ]);
     }
 }

@@ -2,17 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCountryRequest;
+use App\Http\Requests\UpdateCountryRequest;
 use App\Models\Country;
-use Illuminate\Http\Request;
+use App\Services\CountryService;
 
 class CountryController extends Controller
 {
+    protected CountryService $countryService;
+
+    public function __construct(CountryService $countryService)
+    {
+        $this->countryService = $countryService;
+    }
+
     /**
      * Display a listing of countries.
      */
     public function index()
     {
-        $countries = Country::latest()->get();
+        $countries = $this->countryService->getAll();
 
         return response()->json([
             'status' => 'success',
@@ -23,13 +32,11 @@ class CountryController extends Controller
     /**
      * Store a newly created country.
      */
-    public function store(Request $request)
+    public function store(StoreCountryRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        $country = Country::create($validated);
+        $country = $this->countryService->create(
+            $request->validated()
+        );
 
         return response()->json([
             'status' => 'success',
@@ -41,15 +48,14 @@ class CountryController extends Controller
     /**
      * Update the specified country.
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCountryRequest $request, $id)
     {
         $country = Country::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        $country->update($validated);
+        $country = $this->countryService->update(
+            $country,
+            $request->validated()
+        );
 
         return response()->json([
             'status' => 'success',
@@ -59,13 +65,13 @@ class CountryController extends Controller
     }
 
     /**
-     * Remove the specified country.
+     * Update the specified country.
      */
     public function destroy($id)
     {
         $country = Country::findOrFail($id);
 
-        $country->delete();
+        $this->countryService->delete($country);
 
         return response()->json([
             'status' => 'success',
