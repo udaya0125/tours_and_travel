@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSubCategoryRequest;
+use App\Http\Requests\UpdateSubCategoryRequest;
 use App\Models\SubCategory;
-use Illuminate\Http\Request;
 
 class SubCategoryController extends Controller
 {
@@ -19,20 +20,17 @@ class SubCategoryController extends Controller
         return response()->json([
             'status' => 'success',
             'sub_categories' => $subCategories,
-        ], 200);
+        ]);
     }
 
     /**
      * Store a new sub category
      */
-    public function store(Request $request)
+    public function store(StoreSubCategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'nullable|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-        ]);
-
-        $subCategory = SubCategory::create($validated);
+        $subCategory = SubCategory::create(
+            $request->validated()
+        );
 
         return response()->json([
             'status' => 'success',
@@ -44,36 +42,31 @@ class SubCategoryController extends Controller
     /**
      * Update sub category
      */
-    public function update(Request $request, $id)
-    {
-        $subCategory = SubCategory::findOrFail($id);
-
-        $validated = $request->validate([
-            'name' => 'nullable|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-        ]);
-
-        $subCategory->update($validated);
+    public function update(
+        UpdateSubCategoryRequest $request,
+        SubCategory $subCategory
+    ) {
+        $subCategory->update(
+            $request->validated()
+        );
 
         return response()->json([
             'status' => 'success',
             'message' => 'Sub Category updated successfully.',
             'sub_category' => $subCategory->fresh()->load('category'),
-        ], 200);
+        ]);
     }
 
     /**
      * Delete sub category
      */
-    public function destroy($id)
+    public function destroy(SubCategory $subCategory)
     {
-        $subCategory = SubCategory::findOrFail($id);
-
         $subCategory->delete();
 
         return response()->json([
             'status' => 'success',
             'message' => 'Sub Category deleted successfully.',
-        ], 200);
+        ]);
     }
 }
