@@ -278,7 +278,7 @@ import { MdOutlineManageAccounts } from "react-icons/md";
 import { IoHelpCircleOutline } from "react-icons/io5";
 
 const NAV_ITEMS = [
-    { href: "/", label: "Dashboard", icon: RxDashboard },
+    { href: "/dashboard", label: "Dashboard", icon: RxDashboard },
     { href: "/countries", label: "Countries", icon: LuFolderOpen },
     { href: "/categories", label: "Category", icon: LuFolderOpen },
     { href: "/subcategories", label: "Sub Category", icon: LuFolderTree },

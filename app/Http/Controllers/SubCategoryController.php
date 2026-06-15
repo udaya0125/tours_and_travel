@@ -5,17 +5,23 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSubCategoryRequest;
 use App\Http\Requests\UpdateSubCategoryRequest;
 use App\Models\SubCategory;
+use App\Services\SubCategoryService;
 
 class SubCategoryController extends Controller
 {
+    protected $subCategoryService;
+
+    public function __construct(SubCategoryService $subCategoryService)
+    {
+        $this->subCategoryService = $subCategoryService;
+    }
+
     /**
-     * Display all sub categories
+     * Display all sub categories.
      */
     public function index()
     {
-        $subCategories = SubCategory::with('category')
-            ->latest()
-            ->get();
+        $subCategories = $this->subCategoryService->getAll();
 
         return response()->json([
             'status' => 'success',
@@ -24,11 +30,11 @@ class SubCategoryController extends Controller
     }
 
     /**
-     * Store a new sub category
+     * Store a new sub category.
      */
     public function store(StoreSubCategoryRequest $request)
     {
-        $subCategory = SubCategory::create(
+        $subCategory = $this->subCategoryService->create(
             $request->validated()
         );
 
@@ -40,29 +46,59 @@ class SubCategoryController extends Controller
     }
 
     /**
-     * Update sub category
+     * Update a sub category.
      */
+    // public function update(
+    //     UpdateSubCategoryRequest $request,
+    //     SubCategory $subCategory
+    // ) {
+    //     $subCategory = $this->subCategoryService->update(
+    //         $subCategory,
+    //         $request->validated()
+    //     );
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Sub Category updated successfully.',
+    //         'sub_category' => $subCategory->load('category'),
+    //     ]);
+    // }
     public function update(
         UpdateSubCategoryRequest $request,
-        SubCategory $subCategory
+        int $id
     ) {
-        $subCategory->update(
+        $subCategory = SubCategory::findOrFail($id);
+
+        $subCategory = $this->subCategoryService->update(
+            $subCategory,
             $request->validated()
         );
 
         return response()->json([
             'status' => 'success',
             'message' => 'Sub Category updated successfully.',
-            'sub_category' => $subCategory->fresh()->load('category'),
+            'sub_category' => $subCategory->load('category'),
         ]);
     }
 
     /**
-     * Delete sub category
+     * Delete a sub category.
      */
-    public function destroy(SubCategory $subCategory)
+    // public function destroy(SubCategory $subCategory)
+    // {
+    //     $this->subCategoryService->delete($subCategory);
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Sub Category deleted successfully.',
+    //     ]);
+    // }
+
+    public function destroy(int $id)
     {
-        $subCategory->delete();
+        $subCategory = SubCategory::findOrFail($id);
+
+        $this->subCategoryService->delete($subCategory);
 
         return response()->json([
             'status' => 'success',

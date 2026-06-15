@@ -15,6 +15,18 @@ const EditCategoryForm = ({
     const [error, setError] = useState("");
 
     useEffect(() => {
+        if (showForm) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [showForm]);
+
+    useEffect(() => {
         if (editingCategory) {
             setCategoryForm({ name: editingCategory.name });
             setShowForm(true);
@@ -58,7 +70,10 @@ const EditCategoryForm = ({
     };
 
     const handleChange = (e) => {
-        setCategoryForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+        setCategoryForm((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
         if (error) setError("");
     };
 
@@ -93,7 +108,8 @@ const EditCategoryForm = ({
                             htmlFor="name"
                             className="block text-xs font-medium text-gray-500 mb-1.5"
                         >
-                            Category name <span className="text-red-400">*</span>
+                            Category name{" "}
+                            <span className="text-red-400">*</span>
                         </label>
                         <input
                             id="name"
@@ -103,9 +119,10 @@ const EditCategoryForm = ({
                             onChange={handleChange}
                             placeholder="Enter category name"
                             className={`w-full px-3 py-2 rounded-lg border text-sm text-gray-800 outline-none transition-all
-                                ${error
-                                    ? "border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100"
-                                    : "border-gray-200 bg-gray-50 focus:border-gray-400 focus:ring-2 focus:ring-gray-100"
+                                ${
+                                    error
+                                        ? "border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100"
+                                        : "border-gray-200 bg-gray-50 focus:border-gray-400 focus:ring-2 focus:ring-gray-100"
                                 }`}
                         />
                         {error && (

@@ -6,26 +6,34 @@ import Select from "react-select";
 
 const quillModules = {
     toolbar: [
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
-        [{ 'indent': '-1'}, { 'indent': '+1' }],
-        [{ 'align': [] }],
-        ['link', 'image', 'video'],
-        ['clean']
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+        [{ indent: "-1" }, { indent: "+1" }],
+        [{ align: [] }],
+        ["link", "image", "video"],
+        ["clean"],
     ],
 };
 
 const quillFormats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike',
-    'list', 'bullet', 'check',
-    'indent',
-    'align',
-    'link', 'image', 'video'
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+    "bullet",
+    "check",
+    "indent",
+    "align",
+    "link",
+    "image",
+    "video",
 ];
 
-const inputBase = "w-full px-3 py-2 rounded-lg border text-sm text-gray-800 outline-none transition-all border-gray-200 bg-gray-50 focus:border-gray-400 focus:ring-2 focus:ring-gray-100";
+const inputBase =
+    "w-full px-3 py-2 rounded-lg border text-sm text-gray-800 outline-none transition-all border-gray-200 bg-gray-50 focus:border-gray-400 focus:ring-2 focus:ring-gray-100";
 
 const SectionHeading = ({ children }) => (
     <div className="flex items-center gap-2 mt-1">
@@ -39,10 +47,10 @@ const SectionHeading = ({ children }) => (
 // Rich Text Editor Component with scrollable content (same as AddPackageForm)
 const RichTextEditor = ({ value, onChange, placeholder }) => {
     const [isFocused, setIsFocused] = useState(false);
-    
+
     return (
         <div className="rich-text-editor">
-            <div 
+            <div
                 className={`transition-all duration-200 overflow-hidden rounded-lg`}
                 style={{
                     border: `1px solid ${isFocused ? "#9ca3af" : "#e5e7eb"}`,
@@ -149,8 +157,8 @@ const quillCustomStyles = `
 `;
 
 // Inject custom styles
-if (typeof document !== 'undefined') {
-    const styleElement = document.createElement('style');
+if (typeof document !== "undefined") {
+    const styleElement = document.createElement("style");
     styleElement.textContent = quillCustomStyles;
     document.head.appendChild(styleElement);
 }
@@ -164,9 +172,13 @@ const makeSelectStyles = (hasError = false, isDisabled = false) => ({
         borderColor: hasError
             ? "#fca5a5"
             : state.isFocused
-            ? "#9ca3af"
-            : "#e5e7eb",
-        backgroundColor: isDisabled ? "#f3f4f6" : hasError ? "#fef2f2" : "#f9fafb",
+              ? "#9ca3af"
+              : "#e5e7eb",
+        backgroundColor: isDisabled
+            ? "#f3f4f6"
+            : hasError
+              ? "#fef2f2"
+              : "#f9fafb",
         boxShadow: state.isFocused
             ? hasError
                 ? "0 0 0 2px #fee2e2"
@@ -201,8 +213,8 @@ const makeSelectStyles = (hasError = false, isDisabled = false) => ({
         backgroundColor: state.isSelected
             ? "#111827"
             : state.isFocused
-            ? "#f3f4f6"
-            : "white",
+              ? "#f3f4f6"
+              : "white",
         color: state.isSelected ? "white" : "#1f2937",
         "&:active": { backgroundColor: "#374151" },
         cursor: "pointer",
@@ -211,7 +223,8 @@ const makeSelectStyles = (hasError = false, isDisabled = false) => ({
         ...base,
         borderRadius: "0.5rem",
         border: "1px solid #e5e7eb",
-        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
+        boxShadow:
+            "0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
         overflow: "hidden",
     }),
     menuList: (base) => ({
@@ -249,6 +262,18 @@ const EditFAQForm = ({
     const [packageId, setPackageId] = useState("");
     const [editQa, setEditQa] = useState({ question: "", answer: "" });
 
+    useEffect(() => {
+        if (showForm) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [showForm]);
+
     // Filter packages based on selected category
     const filteredPackages = useMemo(() => {
         if (!categoryId) return allPackages; // Show all packages if no category selected
@@ -259,7 +284,9 @@ const EditFAQForm = ({
                 return String(pkg.category_id) === String(categoryId);
             }
             if (pkg.categories && Array.isArray(pkg.categories)) {
-                return pkg.categories.some((cat) => String(cat.id) === String(categoryId));
+                return pkg.categories.some(
+                    (cat) => String(cat.id) === String(categoryId),
+                );
             }
             if (pkg.category && pkg.category.id) {
                 return String(pkg.category.id) === String(categoryId);
@@ -269,20 +296,27 @@ const EditFAQForm = ({
     }, [categoryId, allPackages]);
 
     const categoryOptions = useMemo(
-        () => allCategories.map((cat) => ({ value: String(cat.id), label: cat.name })),
-        [allCategories]
+        () =>
+            allCategories.map((cat) => ({
+                value: String(cat.id),
+                label: cat.name,
+            })),
+        [allCategories],
     );
 
     const packageOptions = useMemo(
-        () => filteredPackages.map((pkg) => ({ 
-            value: String(pkg.id), 
-            label: pkg.name ?? pkg.title ?? `Package ${pkg.id}`
-        })),
-        [filteredPackages]
+        () =>
+            filteredPackages.map((pkg) => ({
+                value: String(pkg.id),
+                label: pkg.name ?? pkg.title ?? `Package ${pkg.id}`,
+            })),
+        [filteredPackages],
     );
 
-    const selectedCategory = categoryOptions.find((o) => o.value === String(categoryId)) || null;
-    const selectedPackage = packageOptions.find((o) => o.value === String(packageId)) || null;
+    const selectedCategory =
+        categoryOptions.find((o) => o.value === String(categoryId)) || null;
+    const selectedPackage =
+        packageOptions.find((o) => o.value === String(packageId)) || null;
 
     // Populate form when editingFaq changes
     useEffect(() => {
@@ -301,7 +335,7 @@ const EditFAQForm = ({
     useEffect(() => {
         if (packageId && categoryId) {
             const packageBelongsToCategory = filteredPackages.some(
-                (pkg) => String(pkg.id) === String(packageId)
+                (pkg) => String(pkg.id) === String(packageId),
             );
             if (!packageBelongsToCategory) {
                 setPackageId(""); // Clear package if it doesn't belong to selected category
@@ -360,9 +394,9 @@ const EditFAQForm = ({
     if (!showForm || !editingFaq) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div
-                className="bg-white rounded-xl w-full max-w-2xl border border-gray-200 overflow-hidden flex flex-col"
+                className="bg-white rounded-xl w-full max-w-3xl border border-gray-200 overflow-hidden flex flex-col"
                 style={{ maxHeight: "calc(100vh - 2rem)" }}
                 onClick={(e) => e.stopPropagation()}
             >
@@ -400,7 +434,9 @@ const EditFAQForm = ({
                                 options={categoryOptions}
                                 value={selectedCategory}
                                 onChange={(selected) => {
-                                    setCategoryId(selected ? selected.value : "");
+                                    setCategoryId(
+                                        selected ? selected.value : "",
+                                    );
                                     // Don't automatically clear package here - let the validation useEffect handle it
                                 }}
                                 placeholder="— Select category —"
@@ -422,7 +458,11 @@ const EditFAQForm = ({
                                 onChange={(selected) =>
                                     setPackageId(selected ? selected.value : "")
                                 }
-                                placeholder={!categoryId ? "Select a category first" : "— Select package —"}
+                                placeholder={
+                                    !categoryId
+                                        ? "Select a category first"
+                                        : "— Select package —"
+                                }
                                 isClearable
                                 isDisabled={!categoryId}
                                 styles={makeSelectStyles(false, !categoryId)}
@@ -448,7 +488,10 @@ const EditFAQForm = ({
                                 type="text"
                                 value={editQa.question}
                                 onChange={(e) =>
-                                    setEditQa((prev) => ({ ...prev, question: e.target.value }))
+                                    setEditQa((prev) => ({
+                                        ...prev,
+                                        question: e.target.value,
+                                    }))
                                 }
                                 required
                                 placeholder="Enter the question"
@@ -462,7 +505,10 @@ const EditFAQForm = ({
                             <RichTextEditor
                                 value={editQa.answer}
                                 onChange={(value) =>
-                                    setEditQa((prev) => ({ ...prev, answer: value }))
+                                    setEditQa((prev) => ({
+                                        ...prev,
+                                        answer: value,
+                                    }))
                                 }
                                 placeholder="Write a clear, helpful answer..."
                             />

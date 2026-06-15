@@ -2,16 +2,28 @@ import axios from "axios";
 import { Globe, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
-const EditCountryForm = ({ 
-    showForm, 
-    setShowForm, 
-    setReloadTrigger, 
-    editingCountry, 
-    setEditingCountry 
+const EditCountryForm = ({
+    showForm,
+    setShowForm,
+    setReloadTrigger,
+    editingCountry,
+    setEditingCountry,
 }) => {
     const [submitting, setSubmitting] = useState(false);
     const [countryName, setCountryName] = useState("");
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        if (showForm) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [showForm]);
 
     useEffect(() => {
         if (editingCountry) {
@@ -27,7 +39,7 @@ const EditCountryForm = ({
         const response = await axios.post(
             route("ourcountries.update", { id }),
             formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
+            { headers: { "Content-Type": "multipart/form-data" } },
         );
         return response.data;
     };
@@ -112,9 +124,10 @@ const EditCountryForm = ({
                             onChange={handleChange}
                             placeholder="e.g. Nepal"
                             className={`w-full px-3 py-2 rounded-lg border text-sm text-gray-800 outline-none transition-all
-                                ${error
-                                    ? "border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100"
-                                    : "border-gray-200 bg-gray-50 focus:border-gray-400 focus:ring-2 focus:ring-gray-100"
+                                ${
+                                    error
+                                        ? "border-red-300 bg-red-50 focus:ring-2 focus:ring-red-100"
+                                        : "border-gray-200 bg-gray-50 focus:border-gray-400 focus:ring-2 focus:ring-gray-100"
                                 }`}
                         />
                         {error && (

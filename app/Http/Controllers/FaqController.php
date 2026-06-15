@@ -2,82 +2,73 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Faq;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreFaqRequest;
+use App\Http\Requests\UpdateFaqRequest;
+use App\Services\FaqService;
 
 class FaqController extends Controller
 {
+    protected FaqService $faqService;
+
+    public function __construct(FaqService $faqService)
+    {
+        $this->faqService = $faqService;
+    }
+
     /**
-     * Display all FAQs
+     * Display all FAQs.
      */
     public function index()
     {
-        $faqs = Faq::with(['category', 'package'])
-            ->latest()
-            ->get();
-
         return response()->json([
             'success' => true,
-            'data' => $faqs
+            'data' => $this->faqService->getAll(),
         ]);
     }
 
     /**
-     * Store a new FAQ
+     * Store FAQ.
      */
-    public function store(Request $request)
+    public function store(StoreFaqRequest $request)
     {
-        $validated = $request->validate([
-            'question'    => 'required|string|max:255',
-            'answer'      => 'required|string',
-            'category_id' => 'nullable|exists:categories,id',
-            'package_id'  => 'nullable|exists:packages,id',
-        ]);
-
-        $faq = Faq::create($validated);
+        $faq = $this->faqService->create(
+            $request->validated()
+        );
 
         return response()->json([
             'success' => true,
             'message' => 'FAQ created successfully.',
-            'data' => $faq
+            'data' => $faq,
         ], 201);
     }
 
     /**
-     * Update FAQ
+     * Update FAQ.
      */
-    public function update(Request $request, $id)
+    public function update(UpdateFaqRequest $request, $id)
     {
-        $faq = Faq::findOrFail($id);
-
-        $validated = $request->validate([
-            'question'    => 'required|string|max:255',
-            'answer'      => 'required|string',
-            'category_id' => 'nullable|exists:categories,id',
-            'package_id'  => 'nullable|exists:packages,id',
-        ]);
-
-        $faq->update($validated);
+        $faq = $this->faqService->update(
+            $id,
+            $request->validated()
+        );
 
         return response()->json([
             'success' => true,
             'message' => 'FAQ updated successfully.',
-            'data' => $faq
+            'data' => $faq,
         ]);
     }
 
     /**
-     * Delete FAQ
+     * Delete FAQ.
      */
     public function destroy($id)
     {
-        $faq = Faq::findOrFail($id);
-
-        $faq->delete();
+        $this->faqService->delete($id);
 
         return response()->json([
             'success' => true,
-            'message' => 'FAQ deleted successfully.'
+            'message' => 'FAQ deleted successfully.',
         ]);
     }
 }
