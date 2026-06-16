@@ -7,6 +7,7 @@ import { Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { BiSolidEdit, BiTrash } from "react-icons/bi";
 import { MdAdd } from "react-icons/md";
+import PageLoader from "../PageLoader/PageLoader";
 
 const FAQ = () => {
     const [allFaqs, setAllFaqs] = useState([]);
@@ -18,21 +19,26 @@ const FAQ = () => {
     const [showEditForm, setShowEditForm] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchFaqs = async () => {
+            setIsLoading(true);
             try {
                 const res = await axios.get(route("ourfaqs.index"));
                 setAllFaqs(res.data.data ?? []);
             } catch (err) {
                 console.error("FAQ fetch error", err);
+            } finally {
+                setIsLoading(false); // ← fixed
             }
         };
 
         const fetchCategories = async () => {
             try {
                 const res = await axios.get(route("ourcategories.index"));
-                const raw = res.data.categories ?? res.data.data ?? res.data ?? [];
+                const raw =
+                    res.data.categories ?? res.data.data ?? res.data ?? [];
                 setAllCategories(Array.isArray(raw) ? raw : Object.values(raw));
             } catch (err) {
                 console.error("Category fetch error", err);
@@ -42,7 +48,8 @@ const FAQ = () => {
         const fetchPackages = async () => {
             try {
                 const res = await axios.get(route("ourpackages.index"));
-                const raw = res.data.packages ?? res.data.data ?? res.data ?? [];
+                const raw =
+                    res.data.packages ?? res.data.data ?? res.data ?? [];
                 setAllPackages(Array.isArray(raw) ? raw : Object.values(raw));
             } catch (err) {
                 console.error("Package fetch error", err);
@@ -146,12 +153,15 @@ const FAQ = () => {
             accessor: "created_at_time",
             Cell: ({ row }) => (
                 <span className="text-gray-400">
-                    {new Date(row.original.created_at).toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: true,
-                    })}
+                    {new Date(row.original.created_at).toLocaleTimeString(
+                        "en-US",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                        },
+                    )}
                 </span>
             ),
         },
@@ -231,7 +241,12 @@ const FAQ = () => {
             </div>
 
             {/* MyTable Component */}
-            <MyTable columns={columns} data={tableData} />
+            {isLoading ? (
+                <PageLoader />
+            ) : (
+                <MyTable columns={columns} data={tableData} />
+            )}
+            {/* <MyTable columns={columns} data={tableData} /> */}
 
             {/* Add FAQ Form */}
             <AddFAQForm

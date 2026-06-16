@@ -6,6 +6,7 @@ import axios from "axios";
 import { Plus, Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { BiSolidEdit, BiTrash } from "react-icons/bi";
+import PageLoader from "../PageLoader/PageLoader";
 
 const SubCategory = () => {
     const [allSubCategory, setAllSubCategory] = useState([]);
@@ -16,23 +17,32 @@ const SubCategory = () => {
     const [showEditForm, setShowEditForm] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchSubCategory = async () => {
+            setIsLoading(true);
             try {
-                const response = await axios.get(route("oursubcategories.index"));
+                const response = await axios.get(
+                    route("oursubcategories.index"),
+                );
                 setAllSubCategory(response.data.sub_categories);
             } catch (error) {
                 console.error("fetching error ", error);
+            } finally {
+                setIsLoading(false); // ← this MUST be in finally, not try
             }
         };
 
         const fetchCategories = async () => {
+            setIsLoading(true);
             try {
                 const response = await axios.get(route("ourcategories.index"));
                 setAllCategories(response.data.categories);
             } catch (error) {
                 console.error("fetching categories error", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -41,7 +51,8 @@ const SubCategory = () => {
     }, [reloadTrigger]);
 
     const handleDelete = async (id) => {
-        if (!confirm("Are you sure you want to delete this subcategory?")) return;
+        if (!confirm("Are you sure you want to delete this subcategory?"))
+            return;
         setDeletingId(id);
         try {
             await axios.delete(route("oursubcategories.destroy", { id }));
@@ -79,12 +90,16 @@ const SubCategory = () => {
         {
             Header: "S.N.",
             accessor: "index",
-            Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>,
+            Cell: ({ row }) => (
+                <span className="text-gray-400">{row.index + 1}</span>
+            ),
         },
         {
             Header: "SubCategory",
             accessor: "name",
-            Cell: ({ value }) => <span className="font-medium text-gray-800">{value}</span>,
+            Cell: ({ value }) => (
+                <span className="font-medium text-gray-800">{value}</span>
+            ),
         },
         {
             Header: "Category",
@@ -113,12 +128,15 @@ const SubCategory = () => {
             accessor: "created_at_time",
             Cell: ({ row }) => (
                 <span className="text-gray-400">
-                    {new Date(row.original.created_at).toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: true,
-                    })}
+                    {new Date(row.original.created_at).toLocaleTimeString(
+                        "en-US",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                        },
+                    )}
                 </span>
             ),
         },
@@ -195,7 +213,13 @@ const SubCategory = () => {
             </div>
 
             {/* MyTable Component */}
-            <MyTable columns={columns} data={tableData} />
+
+            {isLoading ? (
+                <PageLoader />
+            ) : (
+                <MyTable columns={columns} data={tableData} />
+            )}
+            {/* <MyTable columns={columns} data={tableData} /> */}
 
             <AddSubCategory
                 showForm={showAddForm}

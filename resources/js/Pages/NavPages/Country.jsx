@@ -6,6 +6,7 @@ import axios from "axios";
 import { Plus, Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { BiSolidEdit, BiTrash } from "react-icons/bi";
+import PageLoader from "../PageLoader/PageLoader";
 
 const Country = () => {
     const [allCountry, setAllCountry] = useState([]);
@@ -15,14 +16,29 @@ const Country = () => {
     const [showEditForm, setShowEditForm] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
+    // useEffect(() => {
+    //     const fetchCountry = async () => {
+    //         try {
+    //             const response = await axios.get(route("ourcountries.index"));
+    //             setAllCountry(response.data.countries ?? response.data);
+    //         } catch (error) {
+    //             console.error("fetching error ", error);
+    //         }
+    //     };
+    //     fetchCountry();
+    // }, [reloadTrigger]);
     useEffect(() => {
         const fetchCountry = async () => {
+            setIsLoading(true);
             try {
                 const response = await axios.get(route("ourcountries.index"));
                 setAllCountry(response.data.countries ?? response.data);
             } catch (error) {
                 console.error("fetching error ", error);
+            } finally {
+                setIsLoading(false); // ← this MUST be in finally, not try
             }
         };
         fetchCountry();
@@ -51,12 +67,16 @@ const Country = () => {
         {
             Header: "S.N.",
             accessor: "index",
-            Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>,
+            Cell: ({ row }) => (
+                <span className="text-gray-400">{row.index + 1}</span>
+            ),
         },
         {
             Header: "Country Name",
             accessor: "name",
-            Cell: ({ value }) => <span className="font-medium text-gray-800">{value}</span>,
+            Cell: ({ value }) => (
+                <span className="font-medium text-gray-800">{value}</span>
+            ),
         },
         {
             Header: "Created At",
@@ -76,12 +96,15 @@ const Country = () => {
             accessor: "created_at_time",
             Cell: ({ row }) => (
                 <span className="text-gray-400">
-                    {new Date(row.original.created_at).toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: true,
-                    })}
+                    {new Date(row.original.created_at).toLocaleTimeString(
+                        "en-US",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                        },
+                    )}
                 </span>
             ),
         },
@@ -113,7 +136,7 @@ const Country = () => {
     // Prepare data with search filter + index
     const tableData = allCountry
         .filter((country) =>
-            country.name.toLowerCase().includes(searchQuery.toLowerCase())
+            country.name.toLowerCase().includes(searchQuery.toLowerCase()),
         )
         .map((country, index) => ({
             ...country,
@@ -159,7 +182,12 @@ const Country = () => {
             </div>
 
             {/* MyTable Component */}
-            <MyTable columns={columns} data={tableData} />
+            {/* <MyTable columns={columns} data={tableData} /> */}
+            {isLoading ? (
+                <PageLoader />
+            ) : (
+                <MyTable columns={columns} data={tableData} />
+            )}
 
             <AddCountryForm
                 showForm={showAddForm}

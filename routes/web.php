@@ -19,13 +19,20 @@ use App\Http\Controllers\FaqController;
 //     ]);
 // });
 
+
+
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+
+    //  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Welcome Page Route (Accessible to all users, including guests)
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
     Route::get('/',function(){
         return Inertia::render('AdminPages/Welcome');
     });
-
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
 
     // ###############################################################################################################
@@ -34,11 +41,12 @@ Route::get('/dashboard', function () {
 
     Route::middleware('auth')->group(function () {
 
+
     // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    // Page Routes for Welcome Page
+    // Page Routes for Dashboard Page
     // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-        Route::get('/dashboard',function(){
+    Route::get('/dashboard',function(){
         return Inertia::render('AdminPages/Dashboard');
     });
 
@@ -61,6 +69,7 @@ Route::get('/dashboard', function () {
         return Inertia::render('AdminPages/ActivityLogs');
     });
 
+
     // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     // Page Routes for Country Page
     // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -69,18 +78,26 @@ Route::get('/dashboard', function () {
         return Inertia::render('NavPages/Country');
     });
 
-    // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     // Controller Routes for Country Page
-    // &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     Route::get('/ourcountries', [CountryController::class, 'index'])->name('ourcountries.index');
     Route::post('/ourcountries', [CountryController::class, 'store'])->name('ourcountries.store');
     Route::put('/ourcountries/{id}', [CountryController::class, 'update'])->name('ourcountries.update');
     Route::delete('/ourcountries/{id}', [CountryController::class, 'destroy'])->name('ourcountries.destroy');
 
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Page Routes for Category Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
     Route::get('/categories',function(){
         return Inertia::render('NavPages/Category');
-    });   
+    }); 
+    
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Controller Routes for Category Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     Route::get('/ourcategories', [CategoryController::class, 'index'])->name('ourcategories.index');
     Route::post('/ourcategories', [CategoryController::class, 'store'])->name('ourcategories.store');
@@ -88,19 +105,39 @@ Route::get('/dashboard', function () {
     Route::delete('/ourcategories/{id}', [CategoryController::class, 'destroy'])->name('ourcategories.destroy');
 
 
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Page Routes for SubCategory Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
     Route::get('/subcategories',function(){
         return Inertia::render('NavPages/SubCategory');
     }); 
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Controller Routes for SubCategory Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     Route::get('/oursubcategories', [SubCategoryController::class, 'index'])->name('oursubcategories.index');
     Route::post('/oursubcategories', [SubCategoryController::class, 'store'])->name('oursubcategories.store');
     Route::put('/oursubcategories/{id}', [SubCategoryController::class, 'update'])->name('oursubcategories.update');
     Route::delete('/oursubcategories/{id}', [SubCategoryController::class, 'destroy'])->name('oursubcategories.destroy');
 
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Page Routes for Package Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    
+    
     Route::get('/package',function(){
         return Inertia::render('NavPages/Package');
     }); 
 
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Controller Routes for Package Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    
+    
     Route::get('/ourpackages', [PackageController::class, 'index'])->name('ourpackages.index');
     Route::post('/ourpackages', [PackageController::class, 'store'])->name('ourpackages.store');
     Route::put('/ourpackages/{id}', [PackageController::class, 'update'])->name('ourpackages.update');
@@ -108,9 +145,18 @@ Route::get('/dashboard', function () {
     Route::delete('/packages/{packageId}/images/{imageId}', [PackageController::class, 'destroyImage']);
     Route::delete('/packages/{packageId}/images', [PackageController::class, 'destroyImages']);
 
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Page Routes for FAQ Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
     Route::get('/faqs',function(){
         return Inertia::render('NavPages/FAQ');
     }); 
+
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    // Controller Routes for FAQ Page
+    // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
     Route::get('/ourfaqs', [FAQController::class, 'index'])->name('ourfaqs.index');
     Route::post('/ourfaqs', [FAQController::class, 'store'])->name('ourfaqs.store');

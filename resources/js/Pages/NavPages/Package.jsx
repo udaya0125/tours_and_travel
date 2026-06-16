@@ -6,6 +6,7 @@ import axios from "axios";
 import { Plus, Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { BiSolidEdit, BiTrash } from "react-icons/bi";
+import PageLoader from "../PageLoader/PageLoader";
 
 const Package = () => {
     const [allPackages, setAllPackages] = useState([]);
@@ -18,14 +19,18 @@ const Package = () => {
     const [showEditForm, setShowEditForm] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchPackage = async () => {
+            setIsLoading(true);
             try {
                 const response = await axios.get(route("ourpackages.index"));
                 setAllPackages(response.data);
             } catch (error) {
                 console.error("fetching error ", error);
+            } finally{
+                setIsLoading(false); 
             }
         };
         const fetchCountry = async () => {
@@ -248,7 +253,13 @@ const Package = () => {
             </div>
 
             {/* MyTable Component */}
-            <MyTable columns={columns} data={tableData} />
+
+            {isLoading ? (
+                <PageLoader />
+            ) : (
+                <MyTable columns={columns} data={tableData} />
+            )}
+            {/* <MyTable columns={columns} data={tableData} /> */}
 
             {/* Add Package Form */}
             <AddPackageForm
