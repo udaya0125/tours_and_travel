@@ -186,7 +186,6 @@ const EditCategoryForm = ({
         } else {
             document.body.style.overflow = "";
         }
-
         return () => {
             document.body.style.overflow = "";
         };
@@ -213,7 +212,7 @@ const EditCategoryForm = ({
 
         try {
             await handleUpdate(formData, editingCategory.id);
-            setReloadTrigger((prev) => !prev);
+            setReloadTrigger((prev) => !prev); // ✅ only toggled once, here
             handleClose();
         } catch (err) {
             const msg =
@@ -250,17 +249,13 @@ const EditCategoryForm = ({
                 </div>
 
                 {/* Body */}
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="px-5 py-5 space-y-4"
-                >
+                <form onSubmit={handleSubmit(onSubmit)} className="px-5 py-5 space-y-4">
                     <div>
                         <label
                             htmlFor="name"
                             className="block text-xs font-medium text-gray-500 mb-1.5"
                         >
-                            Category name{" "}
-                            <span className="text-red-400">*</span>
+                            Category name <span className="text-red-400">*</span>
                         </label>
                         <input
                             id="name"
@@ -269,8 +264,7 @@ const EditCategoryForm = ({
                             {...register("name", {
                                 required: "Category name is required.",
                                 validate: (v) =>
-                                    !!v.trim() ||
-                                    "Category name cannot be blank.",
+                                    !!v.trim() || "Category name cannot be blank.",
                             })}
                             className={`w-full px-3 py-2 rounded-lg border text-sm text-gray-800 outline-none transition-all
                                 ${

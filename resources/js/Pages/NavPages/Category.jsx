@@ -55,7 +55,7 @@ const Category = () => {
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } },
             );
-            setReloadTrigger((prev) => !prev);
+            // setReloadTrigger((prev) => !prev);
             return response.data;
         } catch (error) {
             console.log("Error updating category", error);
