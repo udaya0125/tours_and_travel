@@ -596,7 +596,7 @@ const quillFormats = [
 ];
 
 const inputBase =
-    "w-full px-3 py-2 rounded-lg border text-sm text-gray-800 outline-none transition-all border-gray-200 bg-gray-50 focus:border-gray-400 focus:ring-2 focus:ring-gray-100";
+    "w-full px-3 py-2 rounded-lg border text-sm text-gray-800 outline-none transition-all bg-gray-50 focus:ring-2 focus:ring-gray-100";
 
 const SectionHeading = ({ children }) => (
     <div className="flex items-center gap-2 mt-1">
@@ -607,14 +607,14 @@ const SectionHeading = ({ children }) => (
     </div>
 );
 
-const RichTextEditor = ({ value, onChange, placeholder }) => {
+const RichTextEditor = ({ value, onChange, placeholder, hasError }) => {
     const [isFocused, setIsFocused] = useState(false);
     return (
         <div className="rich-text-editor">
             <div
                 className="transition-all duration-200 overflow-hidden rounded-lg"
                 style={{
-                    border: `1px solid ${isFocused ? "#9ca3af" : "#e5e7eb"}`,
+                    border: `1px solid ${hasError ? "#fca5a5" : isFocused ? "#9ca3af" : "#e5e7eb"}`,
                     borderRadius: "0.5rem",
                 }}
             >
@@ -706,6 +706,20 @@ const makeSelectStyles = (hasError = false, isDisabled = false) => ({
     }),
 });
 
+// Helper: strip HTML tags to check if Quill answer is truly empty
+const isQuillEmpty = (value) => {
+    if (!value) return true;
+    const stripped = value.replace(/<[^>]*>/g, "").trim();
+    return stripped === "";
+};
+
+const ErrorMsg = ({ message }) =>
+    message ? (
+        <p className="text-xs text-red-400 flex items-center gap-1">
+            <span>⚠</span> {message}
+        </p>
+    ) : null;
+
 const AddFAQForm = ({
     showForm,
     setShowForm,
@@ -713,8 +727,9 @@ const AddFAQForm = ({
     allCategories = [],
     allPackages = [],
 }) => {
-    // qaList stays as useState — dynamic array with Quill editors per row
     const [qaList, setQaList] = useState([{ ...EMPTY_QA }]);
+    // Per-item validation errors: [{ question: "", answer: "" }, ...]
+    const [qaErrors, setQaErrors] = useState([{ question: "", answer: "" }]);
 
     const {
         control,
@@ -762,32 +777,54 @@ const AddFAQForm = ({
         setShowForm(false);
         reset({ category_id: null, package_id: null });
         setQaList([{ ...EMPTY_QA }]);
+        setQaErrors([{ question: "", answer: "" }]);
     };
 
     const handleQaChange = (index, field, value) => {
         setQaList((prev) =>
             prev.map((qa, i) => (i === index ? { ...qa, [field]: value } : qa)),
         );
+        // Clear the error for this field as the user types
+        setQaErrors((prev) =>
+            prev.map((err, i) => (i === index ? { ...err, [field]: "" } : err)),
+        );
     };
 
-    const addQa = () => setQaList((prev) => [...prev, { ...EMPTY_QA }]);
-    const removeQa = (index) => setQaList((prev) => prev.filter((_, i) => i !== index));
+    const addQa = () => {
+        setQaList((prev) => [...prev, { ...EMPTY_QA }]);
+        setQaErrors((prev) => [...prev, { question: "", answer: "" }]);
+    };
+
+    const removeQa = (index) => {
+        setQaList((prev) => prev.filter((_, i) => i !== index));
+        setQaErrors((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    // Validate all Q&A rows; returns true if all valid
+    const validateQa = () => {
+        let valid = true;
+        const newErrors = qaList.map((qa) => {
+            const qErr = qa.question.trim() === "" ? "Question is required." : "";
+            const aErr = isQuillEmpty(qa.answer) ? "Answer is required." : "";
+            if (qErr || aErr) valid = false;
+            return { question: qErr, answer: aErr };
+        });
+        setQaErrors(newErrors);
+        return valid;
+    };
 
     const onSubmit = async (data) => {
-        const validQa = qaList.filter((qa) => qa.question.trim() && qa.answer.trim());
-        if (validQa.length === 0) {
-            setError("root", { message: "Please add at least one complete Q&A pair." });
-            return;
-        }
+        const qaValid = validateQa();
+        if (!qaValid) return;
 
         try {
             await Promise.all(
-                validQa.map((qa) => {
+                qaList.map((qa) => {
                     const formData = new FormData();
                     formData.append("question", qa.question);
                     formData.append("answer", qa.answer);
                     formData.append("category_id", data.category_id.value);
-                    if (data.package_id) formData.append("package_id", data.package_id.value);
+                    formData.append("package_id", data.package_id.value);
                     return axios.post(route("ourfaqs.store"), formData, {
                         headers: { "Content-Type": "multipart/form-data" },
                     });
@@ -873,17 +910,12 @@ const AddFAQForm = ({
                                         menuPosition="fixed"
                                         onChange={(selected) => {
                                             field.onChange(selected);
-                                            // Reset package when category changes
                                             setValue("package_id", null);
                                         }}
                                     />
                                 )}
                             />
-                            {errors.category_id && (
-                                <p className="text-xs text-red-400 flex items-center gap-1">
-                                    <span>⚠</span> {errors.category_id.message}
-                                </p>
-                            )}
+                            <ErrorMsg message={errors.category_id?.message} />
                             {noPackages && (
                                 <p className="text-xs text-amber-500">
                                     No packages available for this category
@@ -891,12 +923,15 @@ const AddFAQForm = ({
                             )}
                         </div>
 
-                        {/* Package */}
+                        {/* Package — now required */}
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-xs font-medium text-gray-500">Package</label>
+                            <label className="text-xs font-medium text-gray-500">
+                                Package <span className="text-red-400">*</span>
+                            </label>
                             <Controller
                                 name="package_id"
                                 control={control}
+                                rules={{ required: "Please select a package." }}
                                 render={({ field }) => (
                                     <Select
                                         {...field}
@@ -904,12 +939,13 @@ const AddFAQForm = ({
                                         placeholder="— Select package —"
                                         isClearable
                                         isDisabled={!categoryId || noPackages}
-                                        styles={makeSelectStyles(false, !categoryId || noPackages)}
+                                        styles={makeSelectStyles(!!errors.package_id, !categoryId || noPackages)}
                                         menuPortalTarget={document.body}
                                         menuPosition="fixed"
                                     />
                                 )}
                             />
+                            <ErrorMsg message={errors.package_id?.message} />
                         </div>
                     </div>
 
@@ -936,6 +972,7 @@ const AddFAQForm = ({
                                     </div>
                                 )}
                                 <div className="flex flex-col gap-3">
+                                    {/* Question */}
                                     <div className="flex flex-col gap-1.5">
                                         <label className="text-xs font-medium text-gray-500">
                                             Question <span className="text-red-400">*</span>
@@ -945,9 +982,16 @@ const AddFAQForm = ({
                                             value={qa.question}
                                             onChange={(e) => handleQaChange(index, "question", e.target.value)}
                                             placeholder="e.g. What is included in the package?"
-                                            className={inputBase}
+                                            className={`${inputBase} ${
+                                                qaErrors[index]?.question
+                                                    ? "border-red-300 bg-red-50 focus:border-red-400 focus:ring-red-100"
+                                                    : "border-gray-200 focus:border-gray-400"
+                                            }`}
                                         />
+                                        <ErrorMsg message={qaErrors[index]?.question} />
                                     </div>
+
+                                    {/* Answer */}
                                     <div className="flex flex-col gap-1.5">
                                         <label className="text-xs font-medium text-gray-500">
                                             Answer <span className="text-red-400">*</span>
@@ -956,7 +1000,9 @@ const AddFAQForm = ({
                                             value={qa.answer}
                                             onChange={(value) => handleQaChange(index, "answer", value)}
                                             placeholder="Write a clear, helpful answer..."
+                                            hasError={!!qaErrors[index]?.answer}
                                         />
+                                        <ErrorMsg message={qaErrors[index]?.answer} />
                                     </div>
                                 </div>
                             </div>

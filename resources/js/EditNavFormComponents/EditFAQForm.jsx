@@ -581,14 +581,20 @@ const SectionHeading = ({ children }) => (
     </div>
 );
 
-const RichTextEditor = ({ value, onChange, placeholder }) => {
+// Helper: Quill always returns "<p><br></p>" for empty — strip tags to check truly empty
+const isQuillEmpty = (value) => {
+    if (!value) return true;
+    return value.replace(/<[^>]*>/g, "").trim() === "";
+};
+
+const RichTextEditor = ({ value, onChange, placeholder, hasError }) => {
     const [isFocused, setIsFocused] = useState(false);
     return (
         <div className="rich-text-editor">
             <div
                 className="transition-all duration-200 overflow-hidden rounded-lg"
                 style={{
-                    border: `1px solid ${isFocused ? "#9ca3af" : "#e5e7eb"}`,
+                    border: `1px solid ${hasError ? "#fca5a5" : isFocused ? "#9ca3af" : "#e5e7eb"}`,
                     borderRadius: "0.5rem",
                 }}
             >
@@ -680,6 +686,13 @@ const makeSelectStyles = (hasError = false, isDisabled = false) => ({
     }),
 });
 
+const ErrorMsg = ({ message }) =>
+    message ? (
+        <p className="text-xs text-red-400 flex items-center gap-1">
+            <span>⚠</span> {message}
+        </p>
+    ) : null;
+
 const EditFAQForm = ({
     showForm,
     setShowForm,
@@ -727,7 +740,6 @@ const EditFAQForm = ({
                     .map((c) => ({ value: String(c.id), label: c.name }))
                     .find((o) => o.value === String(editingFaq.category_id ?? "")) || null;
 
-            // Resolve package option — build full package list first, then find match
             const pkgOption =
                 allPackages
                     .map((p) => ({ value: String(p.id), label: p.name ?? p.title ?? `Package ${p.id}` }))
@@ -775,7 +787,7 @@ const EditFAQForm = ({
         formData.append("question", data.question);
         formData.append("answer", data.answer);
         formData.append("category_id", data.category_id.value);
-        if (data.package_id) formData.append("package_id", data.package_id.value);
+        formData.append("package_id", data.package_id.value); // always present — required
 
         try {
             await handleUpdate(formData, editingFaq.id);
@@ -853,15 +865,15 @@ const EditFAQForm = ({
                                         menuPosition="fixed"
                                         onChange={(selected) => {
                                             field.onChange(selected);
-                                            // Validate package still belongs to new category
                                             const currentPkg = watch("package_id");
                                             if (currentPkg && selected) {
                                                 const pkg = allPackages.find(
                                                     (p) => String(p.id) === String(currentPkg.value),
                                                 );
-                                                const stillValid = pkg?.categories?.some(
-                                                    (c) => String(c.id) === String(selected.value),
-                                                ) || String(pkg?.category_id) === String(selected.value);
+                                                const stillValid =
+                                                    pkg?.categories?.some(
+                                                        (c) => String(c.id) === String(selected.value),
+                                                    ) || String(pkg?.category_id) === String(selected.value);
                                                 if (!stillValid) setValue("package_id", null);
                                             } else {
                                                 setValue("package_id", null);
@@ -870,11 +882,7 @@ const EditFAQForm = ({
                                     />
                                 )}
                             />
-                            {errors.category_id && (
-                                <p className="text-xs text-red-400 flex items-center gap-1">
-                                    <span>⚠</span> {errors.category_id.message}
-                                </p>
-                            )}
+                            <ErrorMsg message={errors.category_id?.message} />
                             {noPackages && (
                                 <p className="text-xs text-amber-500">
                                     No packages available for this category
@@ -882,31 +890,36 @@ const EditFAQForm = ({
                             )}
                         </div>
 
-                        {/* Package */}
+                        {/* Package — now required */}
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-xs font-medium text-gray-500">Package</label>
+                            <label className="text-xs font-medium text-gray-500">
+                                Package <span className="text-red-400">*</span>
+                            </label>
                             <Controller
                                 name="package_id"
                                 control={control}
+                                rules={{ required: "Please select a package." }}
                                 render={({ field }) => (
                                     <Select
                                         {...field}
                                         options={packageOptions}
                                         placeholder={!categoryId ? "Select a category first" : "— Select package —"}
                                         isClearable
-                                        isDisabled={!categoryId}
-                                        styles={makeSelectStyles(false, !categoryId)}
+                                        isDisabled={!categoryId || noPackages}
+                                        styles={makeSelectStyles(!!errors.package_id, !categoryId || noPackages)}
                                         menuPortalTarget={document.body}
                                         menuPosition="fixed"
                                     />
                                 )}
                             />
+                            <ErrorMsg message={errors.package_id?.message} />
                         </div>
                     </div>
 
                     {/* Question & Answer */}
                     <SectionHeading>Question & Answer</SectionHeading>
                     <div className="flex flex-col gap-4">
+                        {/* Question */}
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-medium text-gray-500">
                                 Question <span className="text-red-400">*</span>
@@ -920,13 +933,10 @@ const EditFAQForm = ({
                                 placeholder="Enter the question"
                                 className={errors.question ? inputError : inputBase}
                             />
-                            {errors.question && (
-                                <p className="text-xs text-red-400 flex items-center gap-1">
-                                    <span>⚠</span> {errors.question.message}
-                                </p>
-                            )}
+                            <ErrorMsg message={errors.question?.message} />
                         </div>
 
+                        {/* Answer */}
                         <div className="flex flex-col gap-1.5">
                             <label className="text-xs font-medium text-gray-500">
                                 Answer <span className="text-red-400">*</span>
@@ -934,20 +944,20 @@ const EditFAQForm = ({
                             <Controller
                                 name="answer"
                                 control={control}
-                                rules={{ required: "Answer is required." }}
+                                rules={{
+                                    required: "Answer is required.",
+                                    validate: (v) => !isQuillEmpty(v) || "Answer cannot be blank.",
+                                }}
                                 render={({ field }) => (
                                     <RichTextEditor
                                         value={field.value}
                                         onChange={field.onChange}
                                         placeholder="Write a clear, helpful answer..."
+                                        hasError={!!errors.answer}
                                     />
                                 )}
                             />
-                            {errors.answer && (
-                                <p className="text-xs text-red-400 flex items-center gap-1">
-                                    <span>⚠</span> {errors.answer.message}
-                                </p>
-                            )}
+                            <ErrorMsg message={errors.answer?.message} />
                         </div>
                     </div>
 
