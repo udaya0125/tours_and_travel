@@ -261,6 +261,7 @@
 
 // export default AdminSideBar;
 
+
 import React from "react";
 import { Link, usePage } from "@inertiajs/react";
 import { RxDashboard } from "react-icons/rx";
@@ -326,13 +327,13 @@ const AdminSideBar = ({
                 style={{
                     background: "#ffffff",
                     borderRight: "1px solid #e5e7eb",
-                    boxShadow: "2px 0 12px rgba(0,0,0,0.05)",
+                    boxShadow: "2px 0 16px rgba(15,23,42,0.06)",
                 }}
             >
                 {/* Header */}
                 <div
                     className={`flex items-center h-16 px-4 flex-shrink-0 ${isCollapsed ? "justify-center" : "justify-between"}`}
-                    style={{ borderBottom: "1px solid #f3f4f6" }}
+                    style={{ borderBottom: "1px solid #f1f5f9" }}
                 >
                     {!isCollapsed && (
                         <div className="flex justify-center items-center w-full py-2">
@@ -349,10 +350,14 @@ const AdminSideBar = ({
                     {isCollapsed && (
                         <button
                             onClick={onToggleCollapse}
-                            className="lg:flex w-7 h-7 rounded-full items-center justify-center border border-gray-200 bg-gray-50 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-110 hover:border-blue-300 ml-1"
+                            className="lg:flex w-7 h-7 rounded-full items-center justify-center transition-all duration-200 hover:scale-110 ml-1"
+                            style={{
+                                border: "1px solid #d1fae5",
+                                background: "#f0fdf4",
+                            }}
                             title="Collapse sidebar"
                         >
-                            <BiMenu className="w-3.5 h-3.5 text-gray-500" />
+                            <BiMenu className="w-3.5 h-3.5" style={{ color: "#16a34a" }} />
                         </button>
                     )}
 
@@ -360,14 +365,22 @@ const AdminSideBar = ({
                         <div className="flex items-center gap-1">
                             <button
                                 onClick={onToggleCollapse}
-                                className="hidden lg:flex w-7 h-7 rounded-full items-center justify-center border border-gray-200 bg-gray-50 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-110 hover:border-blue-300 ml-1"
+                                className="hidden lg:flex w-7 h-7 rounded-full items-center justify-center transition-all duration-200 hover:scale-110 ml-1"
+                                style={{
+                                    border: "1px solid #d1fae5",
+                                    background: "#f0fdf4",
+                                }}
                                 title="Collapse sidebar"
                             >
-                                <BiMenu className="w-3.5 h-3.5 text-gray-500" />
+                                <BiMenu className="w-3.5 h-3.5" style={{ color: "#16a34a" }} />
                             </button>
                             <button
                                 onClick={onMobileToggle}
-                                className="lg:hidden w-7 h-7 rounded-full flex items-center justify-center border border-gray-200 bg-gray-50 hover:shadow-md hover:scale-110 transition-all"
+                                className="lg:hidden w-7 h-7 rounded-full flex items-center justify-center hover:scale-110 transition-all"
+                                style={{
+                                    border: "1px solid #e5e7eb",
+                                    background: "#f8fafc",
+                                }}
                             >
                                 <IoClose className="w-3.5 h-3.5 text-gray-500" />
                             </button>
@@ -375,10 +388,33 @@ const AdminSideBar = ({
                     )}
                 </div>
 
+                {/* Horizon divider — signature element */}
+                <svg
+                    viewBox="0 0 256 14"
+                    className="w-full flex-shrink-0"
+                    style={{ height: "10px", opacity: 0.7 }}
+                    preserveAspectRatio="none"
+                >
+                    <polyline
+                        points="0,14 30,4 55,11 80,2 110,10 140,5 170,12 200,3 225,9 256,1 256,14 0,14"
+                        fill="url(#horizonGradient)"
+                    />
+                    <defs>
+                        <linearGradient id="horizonGradient" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#16a34a" stopOpacity="0.18" />
+                            <stop offset="50%" stopColor="#22c55e" stopOpacity="0.1" />
+                            <stop offset="100%" stopColor="#16a34a" stopOpacity="0.18" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+
                 {/* Section label */}
                 {!isCollapsed && (
-                    <div className="px-5 pt-5 pb-2">
-                        <span className="text-[11px] font-bold tracking-[0.12em] uppercase text-gray-400">
+                    <div className="px-5 pt-4 pb-2">
+                        <span
+                            className="text-[11px] font-bold tracking-[0.14em] uppercase"
+                            style={{ color: "#16a34a" }}
+                        >
                             Main Menu
                         </span>
                     </div>
@@ -399,15 +435,40 @@ const AdminSideBar = ({
                                 className={`
                                     relative flex items-center gap-3 rounded-xl transition-all duration-200 group
                                     ${isCollapsed ? "p-2.5 justify-center" : "p-2.5"}
-                                    ${
-                                        active
-                                            ? "bg-gray-200 border border-gray-300"
-                                            : "hover:bg-gray-100/80 text-gray-700 hover:text-gray-800 hover:border hover:border-gray-200 border border-transparent"
-                                    }
                                 `}
+                                style={
+                                    active
+                                        ? {
+                                              background:
+                                                  "linear-gradient(135deg, #ecfdf5, #d1fae5)",
+                                              border: "1px solid #86efac",
+                                              boxShadow:
+                                                  "0 1px 2px rgba(22,163,74,0.06), 0 4px 10px rgba(22,163,74,0.12)",
+                                              color: "#166534",
+                                          }
+                                        : {
+                                              border: "1px solid transparent",
+                                              color: "#475569",
+                                          }
+                                }
+                                onMouseEnter={(e) => {
+                                    if (!active) {
+                                        e.currentTarget.style.background = "#f8fafc";
+                                        e.currentTarget.style.borderColor = "#d1fae5";
+                                        e.currentTarget.style.color = "#1e293b";
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!active) {
+                                        e.currentTarget.style.background = "transparent";
+                                        e.currentTarget.style.borderColor = "transparent";
+                                        e.currentTarget.style.color = "#475569";
+                                    }
+                                }}
                             >
                                 <div
                                     className={`relative flex-shrink-0 ${isCollapsed ? "mx-auto" : ""}`}
+                                    style={{ color: active ? "#16a34a" : "inherit" }}
                                 >
                                     <Icon size={18} />
                                 </div>
@@ -416,7 +477,7 @@ const AdminSideBar = ({
                                     <span
                                         style={{
                                             fontSize: "14.5px",
-                                            fontWeight: 500,
+                                            fontWeight: active ? 600 : 500,
                                             letterSpacing: "0.01em",
                                         }}
                                     >
@@ -426,12 +487,11 @@ const AdminSideBar = ({
 
                                 {isCollapsed && (
                                     <div
-                                        className="absolute left-full ml-3 px-3 py-1.5 text-xs font-semibold rounded-lg shadow-lg border opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-all duration-150 translate-x-1 group-hover:translate-x-0"
+                                        className="absolute left-full ml-3 px-3 py-1.5 text-xs font-semibold rounded-lg shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-all duration-150 translate-x-1 group-hover:translate-x-0"
                                         style={{
-                                            background: "#1e293b",
-                                            color: "#f8fafc",
-                                            borderColor:
-                                                "rgba(255,255,255,0.06)",
+                                            background: "#14532d",
+                                            color: "#f0fdf4",
+                                            border: "1px solid rgba(255,255,255,0.06)",
                                             fontSize: "12.5px",
                                         }}
                                     >
@@ -441,12 +501,9 @@ const AdminSideBar = ({
                                             style={{
                                                 width: 0,
                                                 height: 0,
-                                                borderTop:
-                                                    "4px solid transparent",
-                                                borderBottom:
-                                                    "4px solid transparent",
-                                                borderRight:
-                                                    "4px solid #1e293b",
+                                                borderTop: "4px solid transparent",
+                                                borderBottom: "4px solid transparent",
+                                                borderRight: "4px solid #14532d",
                                             }}
                                         />
                                     </div>
@@ -457,8 +514,8 @@ const AdminSideBar = ({
                 </nav>
 
                 <div
-                    className="mx-4 mb-2"
-                    style={{ borderTop: "1px solid #f3f4f6" }}
+                    className="mx-4 mb-3 flex-shrink-0"
+                    style={{ borderTop: "1px solid #f1f5f9" }}
                 />
             </div>
         </>
@@ -466,3 +523,209 @@ const AdminSideBar = ({
 };
 
 export default AdminSideBar;
+
+// import React from "react";
+// import { Link, usePage } from "@inertiajs/react";
+// import { RxDashboard } from "react-icons/rx";
+// import { BiMenu } from "react-icons/bi";
+// import { IoClose } from "react-icons/io5";
+// import {
+//     LuFolderOpen,
+//     LuFolderTree,
+//     LuMap,
+//     LuMountain,
+//     LuFootprints,
+//     LuLogs,
+// } from "react-icons/lu";
+// import { MdOutlineManageAccounts } from "react-icons/md";
+// import { IoHelpCircleOutline } from "react-icons/io5";
+
+// const NAV_ITEMS = [
+//     { href: "/dashboard", label: "Dashboard", icon: RxDashboard },
+//     { href: "/countries", label: "Countries", icon: LuFolderOpen },
+//     { href: "/categories", label: "Category", icon: LuFolderOpen },
+//     { href: "/subcategories", label: "Sub Category", icon: LuFolderTree },
+//     { href: "/package", label: "Package", icon: LuMap },
+//     { href: "/faqs", label: "FAQ", icon: IoHelpCircleOutline },
+//     { href: "/activity-logs", label: "Activity Logs", icon: LuLogs },
+//     {
+//         href: "/user-management",
+//         label: "User Management",
+//         icon: MdOutlineManageAccounts,
+//     },
+// ];
+
+// const AdminSideBar = ({
+//     isMobileOpen,
+//     onMobileToggle,
+//     isCollapsed,
+//     onToggleCollapse,
+// }) => {
+//     const { url } = usePage();
+//     const currentPath = "/" + url.split("/")[1];
+
+//     const isActive = (href) => currentPath === href;
+//     const user = usePage().props.auth.user;
+
+//     return (
+//         <>
+//             {isMobileOpen && (
+//                 <div
+//                     className="fixed inset-0 z-40 lg:hidden"
+//                     style={{
+//                         background: "rgba(15,23,42,0.35)",
+//                         backdropFilter: "blur(4px)",
+//                     }}
+//                     onClick={onMobileToggle}
+//                 />
+//             )}
+
+//             <div
+//                 className={`
+//                     fixed left-0 top-0 h-screen z-50 flex flex-col transition-all duration-300 ease-in-out
+//                     ${isCollapsed ? "w-[68px]" : "w-64"}
+//                     ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+//                 `}
+//                 style={{
+//                     background: "#ffffff",
+//                     borderRight: "1px solid #e5e7eb",
+//                     boxShadow: "2px 0 12px rgba(0,0,0,0.05)",
+//                 }}
+//             >
+//                 {/* Header */}
+//                 <div
+//                     className={`flex items-center h-16 px-4 flex-shrink-0 ${isCollapsed ? "justify-center" : "justify-between"}`}
+//                     style={{ borderBottom: "1px solid #f3f4f6" }}
+//                 >
+//                     {!isCollapsed && (
+//                         <div className="flex justify-center items-center w-full py-2">
+//                             <Link href="/">
+//                                 <img
+//                                     src={user.image || "/images/logo2.png"}
+//                                     alt="logo"
+//                                     className="h-16 w-auto object-contain"
+//                                 />
+//                             </Link>
+//                         </div>
+//                     )}
+
+//                     {isCollapsed && (
+//                         <button
+//                             onClick={onToggleCollapse}
+//                             className="lg:flex w-7 h-7 rounded-full items-center justify-center border border-gray-200 bg-gray-50 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-110 hover:border-blue-300 ml-1"
+//                             title="Collapse sidebar"
+//                         >
+//                             <BiMenu className="w-3.5 h-3.5 text-gray-500" />
+//                         </button>
+//                     )}
+
+//                     {!isCollapsed && (
+//                         <div className="flex items-center gap-1">
+//                             <button
+//                                 onClick={onToggleCollapse}
+//                                 className="hidden lg:flex w-7 h-7 rounded-full items-center justify-center border border-gray-200 bg-gray-50 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-110 hover:border-blue-300 ml-1"
+//                                 title="Collapse sidebar"
+//                             >
+//                                 <BiMenu className="w-3.5 h-3.5 text-gray-500" />
+//                             </button>
+//                             <button
+//                                 onClick={onMobileToggle}
+//                                 className="lg:hidden w-7 h-7 rounded-full flex items-center justify-center border border-gray-200 bg-gray-50 hover:shadow-md hover:scale-110 transition-all"
+//                             >
+//                                 <IoClose className="w-3.5 h-3.5 text-gray-500" />
+//                             </button>
+//                         </div>
+//                     )}
+//                 </div>
+
+//                 {/* Section label */}
+//                 {!isCollapsed && (
+//                     <div className="px-5 pt-5 pb-2">
+//                         <span className="text-[11px] font-bold tracking-[0.12em] uppercase text-gray-400">
+//                             Main Menu
+//                         </span>
+//                     </div>
+//                 )}
+
+//                 {/* Nav items */}
+//                 <nav
+//                     className={`flex-1 overflow-y-auto overflow-x-hidden py-2 space-y-1 ${isCollapsed ? "px-2" : "px-2"}`}
+//                     style={{ scrollbarWidth: "none" }}
+//                 >
+//                     {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+//                         const active = isActive(href);
+//                         return (
+//                             <Link
+//                                 key={href}
+//                                 href={href}
+//                                 title={isCollapsed ? label : ""}
+//                                 className={`
+//                                     relative flex items-center gap-3 rounded-xl transition-all duration-200 group
+//                                     ${isCollapsed ? "p-2.5 justify-center" : "p-2.5"}
+//                                     ${
+//                                         active
+//                                             ? "bg-gray-200 border border-gray-300"
+//                                             : "hover:bg-gray-100/80 text-gray-700 hover:text-gray-800 hover:border hover:border-gray-200 border border-transparent"
+//                                     }
+//                                 `}
+//                             >
+//                                 <div
+//                                     className={`relative flex-shrink-0 ${isCollapsed ? "mx-auto" : ""}`}
+//                                 >
+//                                     <Icon size={18} />
+//                                 </div>
+
+//                                 {!isCollapsed && (
+//                                     <span
+//                                         style={{
+//                                             fontSize: "14.5px",
+//                                             fontWeight: 500,
+//                                             letterSpacing: "0.01em",
+//                                         }}
+//                                     >
+//                                         {label}
+//                                     </span>
+//                                 )}
+
+//                                 {isCollapsed && (
+//                                     <div
+//                                         className="absolute left-full ml-3 px-3 py-1.5 text-xs font-semibold rounded-lg shadow-lg border opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 transition-all duration-150 translate-x-1 group-hover:translate-x-0"
+//                                         style={{
+//                                             background: "#1e293b",
+//                                             color: "#f8fafc",
+//                                             borderColor:
+//                                                 "rgba(255,255,255,0.06)",
+//                                             fontSize: "12.5px",
+//                                         }}
+//                                     >
+//                                         {label}
+//                                         <div
+//                                             className="absolute right-full top-1/2 -translate-y-1/2"
+//                                             style={{
+//                                                 width: 0,
+//                                                 height: 0,
+//                                                 borderTop:
+//                                                     "4px solid transparent",
+//                                                 borderBottom:
+//                                                     "4px solid transparent",
+//                                                 borderRight:
+//                                                     "4px solid #1e293b",
+//                                             }}
+//                                         />
+//                                     </div>
+//                                 )}
+//                             </Link>
+//                         );
+//                     })}
+//                 </nav>
+
+//                 <div
+//                     className="mx-4 mb-2"
+//                     style={{ borderTop: "1px solid #f3f4f6" }}
+//                 />
+//             </div>
+//         </>
+//     );
+// };
+
+// export default AdminSideBar;
