@@ -241,17 +241,17 @@ const AdminNavBar = ({ onMenuToggle }) => {
                     <div className="flex items-center gap-2">
 
                         {/* Notification bell */}
-                        <button
+                        {/* <button
                             className="relative flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 border border-gray-200 shadow-sm hover:shadow-md hover:scale-110 transition-all duration-200"
                             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#86efac"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; }}
                         >
                             <Bell style={{ width: "15px", height: "15px" }} className="text-gray-500" />
-                            {/* <span className="absolute top-1 right-1 w-2 h-2 rounded-full border-2 border-white" /> */}
-                        </button>
+                            <span className="absolute top-1 right-1 w-2 h-2 rounded-full border-2 border-white" />
+                        </button> */}
 
                         {/* Divider */}
-                        <div className="w-px h-6 bg-gray-200 mx-1" />
+                        {/* <div className="w-px h-6 bg-gray-200 mx-1" /> */}
 
                         {/* User dropdown */}
                         <div className="relative" ref={userMenuRef}>

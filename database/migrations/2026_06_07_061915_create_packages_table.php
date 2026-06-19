@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->foreignId('country_id')->constrained()->onDelete('cascade');
-            $table->foreignId('sub_category_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('sub_category_id')->nullable();
             $table->longText('short_description')->nullable();    
             $table->longText('long_description')->nullable();
             $table->longText('include')->nullable();
