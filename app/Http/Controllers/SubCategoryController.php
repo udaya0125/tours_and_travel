@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSubCategoryRequest;
 use App\Http\Requests\UpdateSubCategoryRequest;
+use App\Models\ActivityLog;
 use App\Models\SubCategory;
 use App\Services\SubCategoryService;
 
@@ -16,57 +17,37 @@ class SubCategoryController extends Controller
         $this->subCategoryService = $subCategoryService;
     }
 
-    /**
-     * Display all sub categories.
-     */
     public function index()
     {
         $subCategories = $this->subCategoryService->getAll();
 
         return response()->json([
-            'status' => 'success',
+            'status'         => 'success',
             'sub_categories' => $subCategories,
         ]);
     }
 
-    /**
-     * Store a new sub category.
-     */
     public function store(StoreSubCategoryRequest $request)
     {
         $subCategory = $this->subCategoryService->create(
             $request->validated()
         );
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(),
+            'title'      => "Created sub category: {$subCategory->name}",
+        ]);
+
         return response()->json([
-            'status' => 'success',
-            'message' => 'Sub Category created successfully.',
+            'status'       => 'success',
+            'message'      => 'Sub Category created successfully.',
             'sub_category' => $subCategory->load('category'),
         ], 201);
     }
 
-    /**
-     * Update a sub category.
-     */
-    // public function update(
-    //     UpdateSubCategoryRequest $request,
-    //     SubCategory $subCategory
-    // ) {
-    //     $subCategory = $this->subCategoryService->update(
-    //         $subCategory,
-    //         $request->validated()
-    //     );
-
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'message' => 'Sub Category updated successfully.',
-    //         'sub_category' => $subCategory->load('category'),
-    //     ]);
-    // }
-    public function update(
-        UpdateSubCategoryRequest $request,
-        int $id
-    ) {
+    public function update(UpdateSubCategoryRequest $request, int $id)
+    {
         $subCategory = SubCategory::findOrFail($id);
 
         $subCategory = $this->subCategoryService->update(
@@ -74,34 +55,34 @@ class SubCategoryController extends Controller
             $request->validated()
         );
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(),
+            'title'      => "Updated sub category: {$subCategory->name}",
+        ]);
+
         return response()->json([
-            'status' => 'success',
-            'message' => 'Sub Category updated successfully.',
+            'status'       => 'success',
+            'message'      => 'Sub Category updated successfully.',
             'sub_category' => $subCategory->load('category'),
         ]);
     }
 
-    /**
-     * Delete a sub category.
-     */
-    // public function destroy(SubCategory $subCategory)
-    // {
-    //     $this->subCategoryService->delete($subCategory);
-
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'message' => 'Sub Category deleted successfully.',
-    //     ]);
-    // }
-
     public function destroy(int $id)
     {
         $subCategory = SubCategory::findOrFail($id);
+        $subCategoryName = $subCategory->name;
 
         $this->subCategoryService->delete($subCategory);
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => request()->ip(),
+            'title'      => "Deleted sub category: {$subCategoryName}",
+        ]);
+
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Sub Category deleted successfully.',
         ]);
     }

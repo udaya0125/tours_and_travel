@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Models\ActivityLog;
 use App\Models\Category;
 use App\Services\CategoryService;
 
@@ -30,26 +31,18 @@ class CategoryController extends Controller
             $request->validated()
         );
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(),
+            'title'      => "Created category: {$category->name}",
+        ]);
+
         return response()->json([
-            'status' => 'success',
-            'message' => 'Category created successfully.',
+            'status'   => 'success',
+            'message'  => 'Category created successfully.',
             'category' => $category,
         ], 201);
     }
-
-    // public function update(UpdateCategoryRequest $request, Category $category)
-    // {
-    //     $category = $this->categoryService->update(
-    //         $category,
-    //         $request->validated()
-    //     );
-
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'message' => 'Category updated successfully.',
-    //         'category' => $category,
-    //     ]);
-    // }
 
     public function update(UpdateCategoryRequest $request, $id)
     {
@@ -60,31 +53,35 @@ class CategoryController extends Controller
             $request->validated()
         );
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(),
+            'title'      => "Updated category: {$category->name}",
+        ]);
+
         return response()->json([
-            'status' => 'success',
-            'message' => 'Category updated successfully.',
+            'status'   => 'success',
+            'message'  => 'Category updated successfully.',
             'category' => $category,
         ]);
     }
-
-    // public function destroy(Category $category)
-    // {
-    //     $this->categoryService->delete($category);
-
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'message' => 'Category deleted successfully.',
-    //     ]);
-    // }
 
     public function destroy($id)
     {
         $category = Category::findOrFail($id);
 
+        $categoryName = $category->name;
+
         $this->categoryService->delete($category);
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => request()->ip(),
+            'title'      => "Deleted category: {$categoryName}",
+        ]);
+
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'Category deleted successfully.',
         ]);
     }

@@ -9,6 +9,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\ActivityLogController;
 
 // Route::get('/', function () {
 //     return Inertia::render('Welcome', [
@@ -68,6 +69,8 @@ use App\Http\Controllers\FaqController;
     Route::get('/activity-logs',function(){
         return Inertia::render('AdminPages/ActivityLogs');
     });
+
+    Route::get('/ourlogs', [ActivityLogController::class, 'index'])->name('ourlogs.index');
 
 
     // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

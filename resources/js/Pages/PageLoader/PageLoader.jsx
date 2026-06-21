@@ -371,7 +371,7 @@ const PageLoader = () => {
             </div>
 
             {/* Progress bar */}
-            <div style={{
+            {/* <div style={{
                 width: 48,
                 height: 2,
                 background: "rgba(0,0,0,0.06)",
@@ -385,10 +385,10 @@ const PageLoader = () => {
                     background: "#d97706",
                     borderRadius: 2,
                 }} />
-            </div>
+            </div> */}
 
             {/* Label */}
-            <span ref={labelRef} style={{
+            {/* <span ref={labelRef} style={{
                 fontSize: 11,
                 fontWeight: 500,
                 letterSpacing: "0.15em",
@@ -396,7 +396,7 @@ const PageLoader = () => {
                 color: "#9ca3af",
             }}>
                 Loading
-            </span>
+            </span> */}
         </div>
     );
 };

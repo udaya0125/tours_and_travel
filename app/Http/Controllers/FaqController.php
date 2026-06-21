@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFaqRequest;
 use App\Http\Requests\UpdateFaqRequest;
+use App\Models\ActivityLog;
+use App\Models\Faq;
 use App\Services\FaqService;
 
 class FaqController extends Controller
@@ -15,36 +17,33 @@ class FaqController extends Controller
         $this->faqService = $faqService;
     }
 
-    /**
-     * Display all FAQs.
-     */
     public function index()
     {
         return response()->json([
             'success' => true,
-            'data' => $this->faqService->getAll(),
+            'data'    => $this->faqService->getAll(),
         ]);
     }
 
-    /**
-     * Store FAQ.
-     */
     public function store(StoreFaqRequest $request)
     {
         $faq = $this->faqService->create(
             $request->validated()
         );
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(),
+            'title'      => "Created FAQ: {$faq->question}",
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'FAQ created successfully.',
-            'data' => $faq,
+            'data'    => $faq,
         ], 201);
     }
 
-    /**
-     * Update FAQ.
-     */
     public function update(UpdateFaqRequest $request, $id)
     {
         $faq = $this->faqService->update(
@@ -52,19 +51,32 @@ class FaqController extends Controller
             $request->validated()
         );
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(),
+            'title'      => "Updated FAQ: {$faq->question}",
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'FAQ updated successfully.',
-            'data' => $faq,
+            'data'    => $faq,
         ]);
     }
 
-    /**
-     * Delete FAQ.
-     */
     public function destroy($id)
     {
+        // Fetch before delete so we can log the question
+        $faq = Faq::findOrFail($id);
+        $faqQuestion = $faq->question;
+
         $this->faqService->delete($id);
+
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => request()->ip(),
+            'title'      => "Deleted FAQ: {$faqQuestion}",
+        ]);
 
         return response()->json([
             'success' => true,

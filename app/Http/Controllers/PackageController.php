@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePackageRequest;
 use App\Http\Requests\UpdatePackageRequest;
+use App\Models\ActivityLog;
+use App\Models\Package;
 use App\Services\PackageService;
+use Illuminate\Http\Request;
 
 class PackageController extends Controller
 {
@@ -22,16 +25,6 @@ class PackageController extends Controller
         );
     }
 
-    public function store(StorePackageRequest $request)
-    {
-        $package = $this->packageService->store($request);
-
-        return response()->json([
-            'message' => 'Package created successfully',
-            'data' => $package,
-        ], 201);
-    }
-
     public function show($id)
     {
         return response()->json(
@@ -39,40 +32,88 @@ class PackageController extends Controller
         );
     }
 
+    public function store(StorePackageRequest $request)
+    {
+        $package = $this->packageService->store($request);
+
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(),
+            'title'      => "Created package: {$package->title}",
+        ]);
+
+        return response()->json([
+            'message' => 'Package created successfully',
+            'data'    => $package,
+        ], 201);
+    }
+
     public function update(UpdatePackageRequest $request, $id)
     {
         $package = $this->packageService->update($request, $id);
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(),
+            'title'      => "Updated package: {$package->title}",
+        ]);
+
         return response()->json([
             'message' => 'Package updated successfully',
-            'data' => $package,
+            'data'    => $package,
         ]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        // Fetch before delete to capture the title for the log
+        $package = Package::findOrFail($id);
+        $packageTitle = $package->title; // ✅ was $package->name — field is 'title'
+
         $this->packageService->delete($id);
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(), // ✅ injected Request instead of request() helper
+            'title'      => "Deleted package: {$packageTitle}",
+        ]);
+
         return response()->json([
-            'message' => 'Package deleted successfully'
+            'message' => 'Package deleted successfully',
         ]);
     }
 
-    public function destroyImage($packageId, $imageId)
+    public function destroyImage(Request $request, $packageId, $imageId)
     {
         $this->packageService->deleteImage($packageId, $imageId);
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(), // ✅ injected Request
+            'title'      => "Deleted image ID {$imageId} from package ID {$packageId}",
+        ]);
+
         return response()->json([
-            'message' => 'Image deleted successfully'
+            'message' => 'Image deleted successfully',
         ]);
     }
 
-    public function destroyImages($packageId, array $imageIds)
+    // ✅ Fixed: $imageIds can't be type-hinted as array in a route method —
+    //    it must come from the request body instead
+    public function destroyImages(Request $request, $packageId)
     {
+        $imageIds = $request->input('image_ids', []);
+
         $count = $this->packageService->deleteImages($packageId, $imageIds);
 
+        ActivityLog::create([
+            'name'       => auth()->user()->name ?? 'System',
+            'ip_address' => $request->ip(),
+            'title'      => "Deleted {$count} image(s) from package ID {$packageId}",
+        ]);
+
         return response()->json([
-            'message' => "{$count} image(s) deleted successfully"
+            'message' => "{$count} image(s) deleted successfully",
         ]);
     }
 }
