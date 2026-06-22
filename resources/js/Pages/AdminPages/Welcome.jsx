@@ -204,7 +204,7 @@ const Welcome = () => {
                                 Dashboard
                             </a>
                             <a
-                                href="/packages"
+                                href="/package"
                                 className="hero-cta inline-flex items-center gap-2 rounded-full border-[1.5px] border-[#d4d4d4] bg-transparent px-10 py-[1.1rem] font-[var(--font-body)] text-[0.95rem] text-black transition-all duration-200 hover:scale-[1.03] hover:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                             >
                                 <span>Packages</span>

@@ -131,13 +131,13 @@ const ActivityLogs = () => {
     return (
         <AdminWrapper>
             {/* Header */}
-            <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">
+            <div className="mb-8 flex justify-between items-center">
+                <h2 className="text-2xl lg:text-3xl font-bold text-gray-800">
                     Activity Logs
                 </h2>
-                <p className="text-gray-500 mt-1 text-sm">
+                {/* <p className="text-gray-500 mt-1 text-sm">
                     Track all admin dashboard activity and actions.
-                </p>
+                </p> */}
             </div>
 
             {/* Loading state */}
