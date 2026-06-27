@@ -33,7 +33,8 @@ const SubCategory = () => {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id) => axios.delete(route("oursubcategories.destroy", { id })),
+        mutationFn: (id) =>
+            axios.delete(route("oursubcategories.destroy", { id })),
         onMutate: (id) => setDeletingId(id),
         onSettled: () => {
             setDeletingId(null);
@@ -56,7 +57,8 @@ const SubCategory = () => {
     });
 
     const handleDelete = (id) => {
-        if (!confirm("Are you sure you want to delete this subcategory?")) return;
+        if (!confirm("Are you sure you want to delete this subcategory?"))
+            return;
         deleteMutation.mutate(id);
     };
 
@@ -73,18 +75,24 @@ const SubCategory = () => {
         {
             Header: "S.N.",
             accessor: "index",
-            Cell: ({ row }) => <span className="text-gray-400">{row.index + 1}</span>,
+            Cell: ({ row }) => (
+                <span className="text-gray-400">{row.index + 1}</span>
+            ),
         },
         {
             Header: "SubCategory",
             accessor: "name",
-            Cell: ({ value }) => <span className="font-medium text-gray-800">{value}</span>,
+            Cell: ({ value }) => (
+                <span className="font-medium text-gray-800">{value}</span>
+            ),
         },
         {
             Header: "Category",
             accessor: "category",
             Cell: ({ row }) => (
-                <span className="text-gray-500">{row.original.category?.name ?? "—"}</span>
+                <span className="text-gray-500">
+                    {row.original.category?.name ?? "—"}
+                </span>
             ),
         },
         {
@@ -105,12 +113,15 @@ const SubCategory = () => {
             accessor: "created_at_time",
             Cell: ({ row }) => (
                 <span className="text-gray-400">
-                    {new Date(row.original.created_at).toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: true,
-                    })}
+                    {new Date(row.original.created_at).toLocaleTimeString(
+                        "en-US",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                        },
+                    )}
                 </span>
             ),
         },
