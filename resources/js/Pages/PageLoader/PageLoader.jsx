@@ -83,11 +83,7 @@
 
 // export default PageLoader;
 
-
-
 // Second version with SVG arcs and center glow
-
-
 
 // import React from "react";
 
@@ -226,18 +222,17 @@
 
 // export default PageLoader;
 
-
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 const PageLoader = () => {
     const outerRef = useRef(null);
-    const midRef   = useRef(null);
+    const midRef = useRef(null);
     const innerRef = useRef(null);
-    const dotRef   = useRef(null);
-    const barRef   = useRef(null);
+    const dotRef = useRef(null);
+    const barRef = useRef(null);
     const labelRef = useRef(null);
-    const tlRef    = useRef([]);
+    const tlRef = useRef([]);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -289,7 +284,10 @@ const PageLoader = () => {
                         if (labelRef.current) {
                             labelRef.current.textContent = labels[li];
                         }
-                        gsap.to(labelRef.current, { opacity: 1, duration: 0.25 });
+                        gsap.to(labelRef.current, {
+                            opacity: 1,
+                            duration: 0.25,
+                        });
                     },
                 });
             }, 2400);
@@ -304,70 +302,87 @@ const PageLoader = () => {
     }, []);
 
     return (
-        <div style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            minHeight: "400px",
-            gap: 32,
-        }}>
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "400px",
+                gap: 32,
+            }}
+        >
             {/* Ring stack */}
             <div style={{ position: "relative", width: 80, height: 80 }}>
-
                 {/* Tracks */}
                 {[0, 12, 24].map((inset) => (
-                    <div key={inset} style={{
-                        position: "absolute",
-                        inset,
-                        borderRadius: "50%",
-                        border: "1.5px solid",
-                        borderColor: inset === 0
-                            ? "rgba(217,119,6,0.12)"
-                            : inset === 12
-                            ? "rgba(139,92,246,0.10)"
-                            : "rgba(236,72,153,0.10)",
-                    }} />
+                    <div
+                        key={inset}
+                        style={{
+                            position: "absolute",
+                            inset,
+                            borderRadius: "50%",
+                            border: "1.5px solid",
+                            borderColor:
+                                inset === 0
+                                    ? "rgba(217,119,6,0.12)"
+                                    : inset === 12
+                                      ? "rgba(139,92,246,0.10)"
+                                      : "rgba(236,72,153,0.10)",
+                        }}
+                    />
                 ))}
 
                 {/* Outer ring — amber */}
-                <div ref={outerRef} style={{
-                    position: "absolute",
-                    inset: 0,
-                    borderRadius: "50%",
-                    border: "1.5px solid transparent",
-                    borderTopColor: "#d97706",
-                }} />
+                <div
+                    ref={outerRef}
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                        borderRadius: "50%",
+                        border: "1.5px solid transparent",
+                        borderTopColor: "#d97706",
+                    }}
+                />
 
                 {/* Mid ring — violet */}
-                <div ref={midRef} style={{
-                    position: "absolute",
-                    inset: 12,
-                    borderRadius: "50%",
-                    border: "1.5px solid transparent",
-                    borderBottomColor: "#8b5cf6",
-                }} />
+                <div
+                    ref={midRef}
+                    style={{
+                        position: "absolute",
+                        inset: 12,
+                        borderRadius: "50%",
+                        border: "1.5px solid transparent",
+                        borderBottomColor: "#8b5cf6",
+                    }}
+                />
 
                 {/* Inner ring — pink */}
-                <div ref={innerRef} style={{
-                    position: "absolute",
-                    inset: 24,
-                    borderRadius: "50%",
-                    border: "1.5px solid transparent",
-                    borderRightColor: "#ec4899",
-                }} />
+                <div
+                    ref={innerRef}
+                    style={{
+                        position: "absolute",
+                        inset: 24,
+                        borderRadius: "50%",
+                        border: "1.5px solid transparent",
+                        borderRightColor: "#ec4899",
+                    }}
+                />
 
                 {/* Center dot */}
-                <div ref={dotRef} style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    width: 6,
-                    height: 6,
-                    borderRadius: "50%",
-                    background: "#d97706",
-                    transform: "translate(-50%, -50%)",
-                }} />
+                <div
+                    ref={dotRef}
+                    style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        background: "#d97706",
+                        transform: "translate(-50%, -50%)",
+                    }}
+                />
             </div>
 
             {/* Progress bar */}
