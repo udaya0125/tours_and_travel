@@ -48,8 +48,7 @@ const FAQ = () => {
     });
 
     const deleteMutation = useMutation({
-        mutationFn: (id) =>
-            axios.delete(route("ourfaqs.destroy", { id })),
+        mutationFn: (id) => axios.delete(route("ourfaqs.destroy", { id })),
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["faqs"] }),
     });
 
@@ -132,12 +131,15 @@ const FAQ = () => {
             accessor: "created_at_time",
             Cell: ({ row }) => (
                 <span className="text-gray-400">
-                    {new Date(row.original.created_at).toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: true,
-                    })}
+                    {new Date(row.original.created_at).toLocaleTimeString(
+                        "en-US",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                        },
+                    )}
                 </span>
             ),
         },
