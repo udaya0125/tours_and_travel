@@ -780,7 +780,9 @@ const AddPackageForm = ({
                             <div>
                                 <p className="text-[11px] text-gray-400 mb-2">
                                     {selectedImages.length} image
-                                    {selectedImages.length !== 1 ? "s" : ""}{" "}
+                                    {selectedImages.length !== 1
+                                        ? "s"
+                                        : ""}{" "}
                                     selected
                                 </p>
                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">

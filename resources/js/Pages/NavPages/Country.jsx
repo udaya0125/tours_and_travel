@@ -25,7 +25,8 @@ const Country = () => {
 
     const deleteMutation = useMutation({
         mutationFn: (id) => axios.delete(route("ourcountries.destroy", { id })),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["countries"] }),
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ["countries"] }),
     });
 
     const handleDelete = (id) => {
@@ -71,12 +72,15 @@ const Country = () => {
             accessor: "created_at_time",
             Cell: ({ row }) => (
                 <span className="text-gray-400">
-                    {new Date(row.original.created_at).toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: true,
-                    })}
+                    {new Date(row.original.created_at).toLocaleTimeString(
+                        "en-US",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: true,
+                        },
+                    )}
                 </span>
             ),
         },
@@ -94,7 +98,10 @@ const Country = () => {
                     </button>
                     <button
                         onClick={() => handleDelete(row.original.id)}
-                        disabled={deleteMutation.isPending && deleteMutation.variables === row.original.id}
+                        disabled={
+                            deleteMutation.isPending &&
+                            deleteMutation.variables === row.original.id
+                        }
                         className="p-2 rounded-lg text-rose-500 hover:bg-rose-100 transition-colors disabled:opacity-40"
                         title="Delete"
                     >
@@ -146,10 +153,7 @@ const Country = () => {
                 <MyTable columns={columns} data={tableData} />
             )}
 
-            <AddCountryForm
-                showForm={showForm}
-                setShowForm={setShowForm}
-            />
+            <AddCountryForm showForm={showForm} setShowForm={setShowForm} />
 
             <EditCountryForm
                 showForm={showForm}
